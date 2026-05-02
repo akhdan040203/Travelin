@@ -1,0 +1,231 @@
+/* ============================================
+   Tailwind CSS v4 — CSS-first Configuration
+   ============================================ */
+@import "tailwindcss";
+@plugin "@tailwindcss/forms";
+@source "../../resources/views";
+@source "../../resources/js";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ============================================
+   Theme Configuration (replaces tailwind.config.js)
+   ============================================ */
+@theme {
+    /* Font Family */
+    --font-sans: 'Inter', 'Figtree', ui-sans-serif, system-ui, sans-serif;
+
+    /* Primary Colors (Coral/Red) */
+    --color-primary-50: #fef2f0;
+    --color-primary-100: #fde3de;
+    --color-primary-200: #fcc7bd;
+    --color-primary-300: #f9a08f;
+    --color-primary-400: #f4715a;
+    --color-primary-500: #E8604C;
+    --color-primary-600: #d4432e;
+    --color-primary-700: #b23522;
+    --color-primary-800: #932f20;
+    --color-primary-900: #7a2c21;
+    --color-primary-950: #42130c;
+
+    /* Dark Colors */
+    --color-dark: #1B1B2F;
+    --color-dark-50: #f5f5f7;
+    --color-dark-100: #e5e5ea;
+    --color-dark-200: #c8c8d4;
+    --color-dark-300: #9f9fb3;
+    --color-dark-400: #71718d;
+    --color-dark-500: #565672;
+    --color-dark-600: #48485e;
+    --color-dark-700: #3d3d4f;
+    --color-dark-800: #353544;
+    --color-dark-900: #1B1B2F;
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        -webkit-font-smoothing: antialiased;
+    }
+}
+
+/* ============================================
+   Custom Utilities (Tailwind v4 @utility)
+   ============================================ */
+@utility btn-primary {
+    background-color: var(--color-primary-500);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 10px 15px -3px rgb(232 96 76 / 0.25);
+
+    &:hover {
+        background-color: var(--color-primary-600);
+        box-shadow: 0 20px 25px -5px rgb(232 96 76 / 0.3);
+        transform: translateY(-2px);
+    }
+
+    &:active {
+        background-color: var(--color-primary-700);
+    }
+}
+
+@utility btn-outline {
+    border: 2px solid var(--color-primary-500);
+    color: var(--color-primary-500);
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    transition: all 0.3s ease-in-out;
+
+    &:hover {
+        background-color: var(--color-primary-500);
+        color: white;
+        transform: translateY(-2px);
+    }
+}
+
+@utility btn-white {
+    background-color: white;
+    color: var(--color-dark-900);
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+
+    &:hover {
+        background-color: #f9fafb;
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+        transform: translateY(-2px);
+    }
+}
+
+@utility card-travel {
+    background-color: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+    transition: all 0.5s ease-out;
+
+    &:hover {
+        box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.1);
+        transform: translateY(-0.5rem);
+    }
+}
+
+@utility section-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--color-dark-900);
+    line-height: 1.25;
+
+    @media (min-width: 768px) {
+        font-size: 2.25rem;
+    }
+}
+
+@utility section-subtitle {
+    color: var(--color-dark-400);
+    font-size: 1.125rem;
+    margin-top: 0.75rem;
+    max-width: 42rem;
+}
+
+@utility glass-card {
+    background-color: rgb(255 255 255 / 0.8);
+    backdrop-filter: blur(24px);
+    border-radius: 1rem;
+    border: 1px solid rgb(255 255 255 / 0.2);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+}
+
+@utility gradient-text {
+    background: linear-gradient(to right, var(--color-primary-500), var(--color-primary-400));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+@utility animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+@utility animate-fade-up {
+    animation: fadeUp 0.6s ease-out forwards;
+}
+
+/* ============================================
+   Keyframe Animations
+   ============================================ */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ============================================
+   Custom Scrollbar
+   ============================================ */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c4c4c4;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* ============================================
+   Misc
+   ============================================ */
+.stars-rating {
+    color: #fbbf24;
+}
