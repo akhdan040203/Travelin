@@ -13,8 +13,17 @@ class HomeController extends Controller
         $featuredDestinations = Destination::with('category')
             ->where('is_active', true)
             ->where('is_featured', true)
-            ->take(6)
-            ->get();
+            ->get()
+            ->sortByDesc(function ($destination) {
+                $category = strtolower($destination->category->name ?? '');
+                $slug = strtolower($destination->slug ?? '');
+
+                return str_contains($category, 'pantai')
+                    || str_contains($slug, 'bali')
+                    || str_contains($slug, 'raja-ampat');
+            })
+            ->values()
+            ->take(6);
 
         $categories = Category::where('is_active', true)
             ->withCount(['destinations' => fn($q) => $q->where('is_active', true)])

@@ -10,37 +10,64 @@
         <p class="section-subtitle mx-auto">Pilih jadwal terbaik untuk petualangan kamu</p>
 
         {{-- Filter --}}
-        <form action="{{ route('schedules') }}" method="GET" class="mt-8 mx-auto max-w-3xl rounded-2xl bg-white p-3 shadow-2xl shadow-black/5 border border-gray-100">
-            <div class="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-3">
-                <div class="text-left">
-                    <label for="departure_date" class="block text-[10px] font-black text-dark-900 uppercase tracking-widest mb-1.5 pl-1">Tanggal Berangkat</label>
-                    <input type="date" id="departure_date" name="departure_date" value="{{ request('departure_date') }}"
-                           class="w-full h-11 px-4 rounded-xl border-0 bg-gray-50 text-sm font-semibold text-dark-900 focus:ring-2 focus:ring-primary-500/20">
+        @php
+            $selectedDestination = $destinations->firstWhere('id', (int) request('destination'));
+        @endphp
+        <form action="{{ route('schedules') }}" method="GET" class="relative mt-8 mx-auto max-w-6xl rounded-[28px] bg-white px-5 py-6 md:px-7 md:py-6 shadow-2xl shadow-black/10 border border-gray-100/70" style="z-index: 1000;">
+            <div class="mb-5 flex items-start justify-between gap-4 text-left">
+                <div>
+                    <p class="text-xs text-dark-300 font-medium">Your Schedule</p>
+                    <p class="text-sm md:text-base font-bold text-dark-900 mt-1">{{ $selectedDestination->name ?? 'Semua Destinasi' }}</p>
+                </div>
+                @if(request()->filled('departure_date') || request()->filled('destination'))
+                    <a href="{{ route('schedules') }}" class="hidden md:inline-flex items-center gap-2 text-[11px] font-semibold text-dark-300 hover:text-primary-500 transition-colors">
+                        Reset
+                        <span>›</span>
+                    </a>
+                @endif
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-[1fr_1.4fr_auto] items-end gap-4 md:gap-3">
+                <div class="min-w-0 space-y-2 text-left">
+                    <label for="departure_date" class="block text-[11px] font-medium text-dark-300 pl-4">Tanggal</label>
+                    <div class="relative group">
+                        <input type="date" id="departure_date" name="departure_date" value="{{ request('departure_date') }}"
+                               class="h-12 w-full px-4 rounded-full border border-gray-200 bg-white text-xs font-semibold text-dark-900 focus:ring-2 focus:ring-primary-500/15 focus:border-primary-200 shadow-sm">
+                    </div>
                 </div>
 
-                <div class="text-left">
-                    <label for="destination" class="block text-[10px] font-black text-dark-900 uppercase tracking-widest mb-1.5 pl-1">Destinasi</label>
-                    <select id="destination" name="destination"
-                            class="w-full h-11 px-4 rounded-xl border-0 bg-gray-50 text-sm font-semibold text-dark-900 focus:ring-2 focus:ring-primary-500/20">
-                        <option value="">Semua Destinasi</option>
-                        @foreach($destinations as $destination)
-                            <option value="{{ $destination->id }}" {{ (string) request('destination') === (string) $destination->id ? 'selected' : '' }}>
-                                {{ $destination->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                <div class="hidden"></div>
+
+                <div class="min-w-0 space-y-2 text-left">
+                    <label class="block text-[11px] font-medium text-dark-300 pl-4">Destinasi</label>
+                    <div class="relative group">
+                        <div class="absolute left-4 top-1/2 -translate-y-1/2 text-dark-900 pointer-events-none">
+                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M6 7v13m12-13v13M9 7V4h6v3"/></svg>
+                        </div>
+                        <button type="button" onclick="toggleScheduleDropdown('destination', event)"
+                                class="h-12 w-full pl-10 pr-4 bg-white border border-gray-200 rounded-full text-xs font-semibold text-dark-900 text-left flex items-center justify-between gap-2 focus:ring-2 focus:ring-primary-500/15 focus:border-primary-200 transition-all shadow-sm">
+                            <span id="schedule-selected-destination" class="truncate">{{ $selectedDestination->name ?? 'Semua Destinasi' }}</span>
+                            <svg class="text-dark-300 transition-transform duration-300 flex-shrink-0" id="schedule-arrow-destination" style="width: 12px; height: 12px;" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+
+                        <div id="schedule-list-destination" class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-[120] py-1 max-h-60 overflow-y-auto">
+                            <div class="px-4 py-2 text-[10px] font-bold text-dark-200 uppercase tracking-widest bg-gray-50/50">Select Destination</div>
+                            <div onclick="selectScheduleOption('destination', '', 'Semua Destinasi')" class="px-4 py-2.5 text-xs font-semibold cursor-pointer transition-colors {{ request('destination', '') === '' ? 'bg-red-50 text-primary-600' : 'text-dark-600 hover:bg-red-50 hover:text-primary-600' }}">Semua Destinasi</div>
+                            @foreach($destinations as $destination)
+                                <div onclick="selectScheduleOption('destination', '{{ $destination->id }}', '{{ $destination->name }}')" class="px-4 py-2.5 text-xs font-semibold cursor-pointer transition-colors {{ (string) request('destination') === (string) $destination->id ? 'bg-red-50 text-primary-600' : 'text-dark-600 hover:bg-red-50 hover:text-primary-600' }}">{{ $destination->name }}</div>
+                            @endforeach
+                        </div>
+                        <input id="schedule-input-destination" type="hidden" name="destination" value="{{ request('destination') }}">
+                    </div>
                 </div>
 
-                <div class="flex items-end gap-2">
-                    <button type="submit" class="h-11 px-5 rounded-xl bg-dark-900 text-white text-xs font-black uppercase tracking-widest hover:bg-primary-500 transition-all">
-                        Filter
-                    </button>
-                    @if(request()->filled('departure_date') || request()->filled('destination'))
-                        <a href="{{ route('schedules') }}" class="h-11 px-4 rounded-xl bg-gray-50 text-dark-500 text-xs font-black uppercase tracking-widest flex items-center hover:bg-gray-100 transition-all">
-                            Reset
-                        </a>
-                    @endif
-                </div>
+                <button type="submit" aria-label="Search" class="w-full md:w-28 h-12 bg-primary-500 text-white rounded-full font-semibold text-xs flex items-center justify-center gap-2 hover:bg-primary-600 transition-all shadow-lg shadow-primary-500/25 group active:scale-95">
+                    <span>Search</span>
+                    <svg class="hidden md:block w-3.5 h-3.5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="7"/>
+                        <path stroke-linecap="round" d="M20 20l-4.2-4.2"/>
+                    </svg>
+                </button>
+
             </div>
         </form>
     </div>
@@ -125,3 +152,42 @@
     </div>
 </section>
 @endsection
+
+@push('scripts')
+<script>
+    function toggleScheduleDropdown(name, event) {
+        event.stopPropagation();
+
+        const list = document.getElementById('schedule-list-' + name);
+        const arrow = document.getElementById('schedule-arrow-' + name);
+        if (!list || !arrow) return;
+
+        document.querySelectorAll('[id^="schedule-list-"]').forEach(el => {
+            if (el.id !== 'schedule-list-' + name) el.classList.add('hidden');
+        });
+        document.querySelectorAll('[id^="schedule-arrow-"]').forEach(el => {
+            if (el.id !== 'schedule-arrow-' + name) el.classList.remove('rotate-180');
+        });
+
+        list.classList.toggle('hidden');
+        arrow.classList.toggle('rotate-180');
+    }
+
+    function selectScheduleOption(name, value, label) {
+        const selected = document.getElementById('schedule-selected-' + name);
+        const input = document.getElementById('schedule-input-' + name);
+        const list = document.getElementById('schedule-list-' + name);
+        const arrow = document.getElementById('schedule-arrow-' + name);
+
+        if (selected) selected.innerText = label;
+        if (input) input.value = value;
+        if (list) list.classList.add('hidden');
+        if (arrow) arrow.classList.remove('rotate-180');
+    }
+
+    window.addEventListener('click', () => {
+        document.querySelectorAll('[id^="schedule-list-"]').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('[id^="schedule-arrow-"]').forEach(el => el.classList.remove('rotate-180'));
+    });
+</script>
+@endpush

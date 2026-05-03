@@ -1,7 +1,7 @@
 @extends('layouts.main')
 
 @section('title', $destination->name . ' - Travelin')
-@section('meta_description', $destination->short_description)
+@section('meta_description', $destination->short_description ?? str($destination->description)->limit(150))
 
 @section('content')
 @php
@@ -14,298 +14,291 @@
         'dieng-plateau-adventure' => 'images/destinations/dieng.png',
     ];
 
-    $defaultImage = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80&fit=crop';
+    $fallbackImage = $localImages[$destination->slug] ?? 'images/destinations/bali.png';
     $heroImage = $destination->featured_image
         ? asset('storage/' . $destination->featured_image)
-        : (isset($localImages[$destination->slug]) ? asset($localImages[$destination->slug]) : $defaultImage);
+        : asset($fallbackImage);
 
-    $fallbackGalleries = [
+    $galleryMap = [
         'raja-ampat-paradise' => [
-            ['src' => asset('images/destinations/raja-ampat.png'), 'caption' => 'Laguna dan pulau karst Raja Ampat'],
-            ['src' => 'https://images.unsplash.com/photo-1516690561799-46d8f74f9abf?w=900&q=80&fit=crop', 'caption' => 'Snorkeling di laut tropis'],
-            ['src' => 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=900&q=80&fit=crop', 'caption' => 'Pantai pasir putih dan air jernih'],
-        ],
-        'bromo-sunrise-experience' => [
-            ['src' => asset('images/destinations/bromo.png'), 'caption' => 'Sunrise di kawasan Gunung Bromo'],
-            ['src' => 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=900&q=80&fit=crop', 'caption' => 'Viewpoint pegunungan saat pagi'],
-            ['src' => 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900&q=80&fit=crop', 'caption' => 'Rute alam dan lanskap vulkanik'],
+            'images/destinations/raja-ampat.png',
+            'https://images.unsplash.com/photo-1516690561799-46d8f74f9abf?w=900&q=85&fit=crop',
+            'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=900&q=85&fit=crop',
         ],
         'bali-island-hopping' => [
-            ['src' => asset('images/destinations/bali.png'), 'caption' => 'Tebing pantai ikonik Bali'],
-            ['src' => 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=900&q=80&fit=crop', 'caption' => 'Suasana pulau tropis'],
-            ['src' => 'https://images.unsplash.com/photo-1555400038-63f5ba517a47?w=900&q=80&fit=crop', 'caption' => 'Budaya dan lanskap Bali'],
+            'images/destinations/bali.png',
+            'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=900&q=85&fit=crop',
+            'https://source.unsplash.com/900x700/?bali,beach,nusa-penida',
+        ],
+        'bromo-sunrise-experience' => [
+            'images/destinations/bromo.png',
+            'https://images.unsplash.com/photo-1589553416260-f586c8f1514f?w=900&q=85&fit=crop',
+            'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=900&q=85&fit=crop',
         ],
         'taman-nasional-komodo' => [
-            ['src' => asset('images/destinations/komodo.png'), 'caption' => 'Bukit dan pulau di Labuan Bajo'],
-            ['src' => 'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=900&q=80&fit=crop', 'caption' => 'Pantai dan kapal trip pulau'],
-            ['src' => 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900&q=80&fit=crop', 'caption' => 'Snorkeling dan pantai eksotis'],
-        ],
-        'yogyakarta-heritage-tour' => [
-            ['src' => asset('images/destinations/yogyakarta.png'), 'caption' => 'Warisan budaya Yogyakarta'],
-            ['src' => 'https://images.unsplash.com/photo-1596402184320-417e7178b2cd?w=900&q=80&fit=crop', 'caption' => 'Candi dan arsitektur bersejarah'],
-            ['src' => 'https://images.unsplash.com/photo-1558005530-a7958896ec60?w=900&q=80&fit=crop', 'caption' => 'Suasana kota dan budaya lokal'],
-        ],
-        'dieng-plateau-adventure' => [
-            ['src' => asset('images/destinations/dieng.png'), 'caption' => 'Dataran tinggi Dieng'],
-            ['src' => 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=900&q=80&fit=crop', 'caption' => 'Golden sunrise di dataran tinggi'],
-            ['src' => 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=900&q=80&fit=crop', 'caption' => 'Danau dan jalur alam pegunungan'],
+            'images/destinations/komodo.png',
+            'https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=900&q=85&fit=crop',
+            'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900&q=85&fit=crop',
         ],
     ];
 
-    $galleryImages = $destination->galleries
-        ->take(3)
-        ->map(fn($gallery) => [
-            'src' => \Illuminate\Support\Str::startsWith($gallery->image, ['http://', 'https://'])
-                ? $gallery->image
-                : asset('storage/' . $gallery->image),
-            'caption' => $gallery->caption ?? $destination->name,
-        ])
-        ->values();
+    $gallery = collect($galleryMap[$destination->slug] ?? [$fallbackImage, 'images/destinations/raja-ampat.png', 'images/destinations/bali.png'])
+        ->map(fn ($image) => str_starts_with($image, 'http') ? $image : asset($image));
 
-    if ($galleryImages->count() < 3) {
-        $galleryImages = $galleryImages
-            ->concat(collect($fallbackGalleries[$destination->slug] ?? [
-                ['src' => $heroImage, 'caption' => $destination->name],
-                ['src' => 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900&q=80&fit=crop', 'caption' => 'Pemandangan trip pilihan'],
-                ['src' => 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=900&q=80&fit=crop', 'caption' => 'Pengalaman perjalanan'],
-            ]))
-            ->take(3)
-            ->values();
-    }
-
-    $tripBenefits = collect($destination->included ?: [
-        'Transportasi selama trip',
-        'Akomodasi sesuai paket',
-        'Guide lokal berpengalaman',
+    $benefits = [
+        'Akomodasi pilihan selama trip',
+        'Transportasi lokal sesuai itinerary',
         'Tiket masuk destinasi utama',
+        'Guide lokal berpengalaman',
         'Dokumentasi perjalanan',
-        'Bantuan tim Travelin selama trip',
-    ]);
+        'Bantuan reservasi dan briefing trip',
+    ];
 
-    $isWishlisted = auth()->check()
-        ? auth()->user()->hasWishlisted($destination->id)
-        : false;
+    $itinerary = [
+        ['day' => 'Day 1', 'title' => 'Arrival & Check-in', 'desc' => 'Penjemputan, check-in, briefing perjalanan, lalu menikmati spot santai di sekitar area destinasi.'],
+        ['day' => 'Day 2', 'title' => 'Explore Highlight', 'desc' => 'Mengunjungi spot utama, photo stop terbaik, aktivitas pilihan, dan sunset point.'],
+        ['day' => 'Day 3', 'title' => 'Local Experience & Return', 'desc' => 'Waktu bebas, belanja lokal, persiapan pulang, dan transfer menuju meeting/drop point.'],
+    ];
+
+    $openSchedule = $destination->schedules->firstWhere('status', 'open') ?? $destination->schedules->first();
+    $bookingUrl = $openSchedule ? route('booking.create', $openSchedule->id) : route('schedules', ['destination' => $destination->id]);
 @endphp
 
-{{-- Hero Image --}}
-<section class="relative h-[50vh] md:h-[60vh] overflow-hidden">
-    <img src="{{ $heroImage }}" alt="{{ $destination->name }}"
-         class="w-full h-full object-cover">
-    <div class="absolute inset-0 bg-gradient-to-t from-dark-900/80 via-dark-900/30 to-transparent"></div>
+<section class="relative min-h-screen bg-white pb-28 md:hidden">
+    <div class="relative h-[52vh] min-h-[430px] overflow-hidden bg-dark-900">
+        <img src="{{ $heroImage }}" alt="{{ $destination->name }}" class="h-full w-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/20"></div>
 
-    <div class="absolute bottom-0 left-0 right-0 p-8">
-        <div class="max-w-7xl mx-auto">
-            
-            <h1 class="text-3xl md:text-5xl font-bold text-white">{{ $destination->name }}</h1>
-            <div class="flex flex-wrap items-center gap-4 mt-3 text-white/80">
-                <span class="flex items-center gap-1.5">
-                    {{ $destination->location }}
-                </span>
-            </div>
-            <div class="mt-5">
-                @auth
-                    @if(auth()->user()->role !== 'admin')
-                        <form method="POST" action="{{ route('user.wishlist.toggle', $destination) }}" class="js-wishlist-form inline-flex" data-destination-id="{{ $destination->id }}">
-                            @csrf
-                            <button type="submit" class="js-wishlist-button inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-black uppercase tracking-widest transition-all shadow-lg {{ $isWishlisted ? 'bg-red-500 text-white shadow-red-500/25 hover:bg-red-600' : 'bg-white text-dark-900 hover:bg-red-50 hover:text-red-500' }}">
-                                <svg class="js-wishlist-icon w-4 h-4" fill="{{ $isWishlisted ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                                </svg>
-                                <span class="js-wishlist-label">{{ $isWishlisted ? 'Tersimpan' : 'Tambah Wishlist' }}</span>
-                            </button>
-                        </form>
-                    @endif
-                @else
-                    <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-xs font-black uppercase tracking-widest text-dark-900 shadow-lg hover:bg-red-50 hover:text-red-500 transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                        </svg>
-                        Login untuk Wishlist
-                    </a>
-                @endauth
-            </div>
-        </div>
-    </div>
-</section>
+        <div class="absolute left-4 right-4 top-24 z-20 flex items-center justify-between md:left-8 md:right-8">
+            <a href="{{ route('destinations.index') }}" class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-dark-900 shadow-xl backdrop-blur hover:bg-white">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M15 19l-7-7 7-7"/></svg>
+            </a>
 
-{{-- Content --}}
-<section class="py-12 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            {{-- Main Content --}}
-            <div class="lg:col-span-2 space-y-10">
-                {{-- Description --}}
-                <div>
-                    <h2 class="text-2xl font-bold text-dark-900 mb-4">Tentang Destinasi</h2>
-                    <div class="prose prose-lg text-dark-600 max-w-none">
-                        {!! nl2br(e($destination->description)) !!}
-                    </div>
-                </div>
-
-                {{-- Trip Benefits --}}
-                <div class="bg-emerald-50 rounded-2xl p-6 md:p-8 border border-emerald-100">
-                    <div class="flex items-start justify-between gap-4 mb-6">
-                        <div>
-                            <h2 class="text-2xl font-bold text-dark-900 mt-1">Apa Saja yang Kamu Dapatkan</h2>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        @foreach($tripBenefits as $benefit)
-                            <div class="flex items-start gap-3 rounded-xl bg-white/80 px-4 py-3 text-sm text-dark-700 shadow-sm shadow-emerald-900/5">
-                                <span class="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M20 7 9 18l-5-5"/>
-                                    </svg>
-                                </span>
-                                <span>{{ $benefit }}</span>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                {{-- Gallery --}}
-                <div>
-                    <h2 class="text-2xl font-bold text-dark-900 mb-6">Galeri Foto</h2>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-                        @foreach($galleryImages as $image)
-                            <div class="relative aspect-square rounded-xl sm:rounded-2xl overflow-hidden group shadow-xl shadow-black/5 {{ $loop->last && $galleryImages->count() % 2 === 1 ? 'col-span-2 sm:col-span-1' : '' }}">
-                                <img src="{{ $image['src'] }}"
-                                     alt="{{ $image['caption'] }}"
-                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                     loading="lazy">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent opacity-80"></div>
-                                <div class="absolute left-4 right-4 bottom-4">
-                                    <p class="text-white text-xs font-bold leading-snug">{{ $image['caption'] }}</p>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                {{-- Itinerary --}}
-                @if($destination->itinerary)
-                <div>
-                    <h2 class="text-2xl font-bold text-dark-900 mb-6">Itinerary</h2>
-                    <div class="space-y-4">
-                        @foreach($destination->itinerary as $item)
-                            <div class="flex gap-4 group">
-                                <div class="flex flex-col items-center">
-                                    <div class="w-12 h-12 rounded-xl bg-primary-500 text-white flex items-center justify-center font-bold shadow-lg shadow-primary-500/30 group-hover:scale-110 transition-transform">
-                                        {{ $item['day'] }}
-                                    </div>
-                                    @if(!$loop->last)
-                                        <div class="w-0.5 flex-1 bg-primary-100 mt-2"></div>
-                                    @endif
-                                </div>
-                                <div class="pb-8">
-                                    <h3 class="font-bold text-dark-900 text-lg">{{ $item['title'] }}</h3>
-                                    <p class="text-dark-400 mt-1">{{ $item['description'] }}</p>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
+            @auth
+                @if(auth()->user()->role !== 'admin')
+                    @php $isWishlisted = auth()->user()->hasWishlisted($destination->id); @endphp
+                    <form method="POST" action="{{ route('user.wishlist.toggle', $destination) }}" class="js-wishlist-form" data-destination-id="{{ $destination->id }}">
+                        @csrf
+                        <button type="submit" aria-label="Toggle wishlist" class="js-wishlist-button inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-red-500 shadow-xl backdrop-blur hover:bg-red-50">
+                            <svg class="js-wishlist-icon h-5 w-5" fill="{{ $isWishlisted ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                        </button>
+                    </form>
                 @endif
+            @else
+                <a href="{{ route('login') }}" class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-red-500 shadow-xl backdrop-blur hover:bg-red-50">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                </a>
+            @endauth
+        </div>
+    </div>
+
+    <div class="relative z-10 mx-auto -mt-16 max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div class="rounded-t-[32px] bg-white px-4 py-6 shadow-2xl shadow-black/10 sm:rounded-[32px] sm:p-8">
+            <div class="flex items-start justify-between gap-4">
+                <div class="min-w-0">
+                    <h1 class="text-2xl font-black text-dark-900 md:text-4xl">{{ $destination->name }}</h1>
+                    <p class="mt-1 flex items-center gap-1.5 text-xs font-medium text-dark-400">
+                        <span class="h-2 w-2 rounded-full bg-primary-500"></span>
+                        {{ $destination->location }}
+                    </p>
+                </div>
+                <div class="shrink-0 text-right">
+                    <p class="text-xl font-black text-primary-500 md:text-3xl">{{ $destination->formatted_price }}</p>
+                    <p class="text-[10px] font-semibold uppercase tracking-widest text-dark-300">/person</p>
+                </div>
             </div>
 
-            {{-- Sidebar --}}
-            <div class="lg:col-span-1">
-                <div class="sticky top-28 space-y-6">
-                    {{-- Price Card --}}
-                    <div class="card-travel p-6">
-                        <div class="text-center mb-6">
-                            <span class="text-dark-400 text-[10px] font-black uppercase tracking-widest">All-Inclusive Price</span>
-                            <p class="text-3xl font-black text-primary-500 mt-2">{{ $destination->formatted_price }}</p>
-                            <div class="flex items-center justify-center gap-2 mt-2">
-                                <span class="text-dark-400 text-xs font-medium italic">Includes: Flight, Hotel, & More</span>
+            <div class="mt-5 flex items-center gap-4 text-xs text-dark-500">
+                <div class="flex -space-x-2">
+                    <span class="h-8 w-8 rounded-full border-2 border-white bg-primary-100"></span>
+                    <span class="h-8 w-8 rounded-full border-2 border-white bg-dark-100"></span>
+                    <span class="grid h-8 w-8 place-items-center rounded-full border-2 border-white bg-primary-500 text-[10px] font-bold text-white">32</span>
+                </div>
+                <span class="font-medium">People Reviewed</span>
+                <span class="ml-auto font-bold text-dark-900">★ 4.5 / 5</span>
+            </div>
+
+            <div class="mt-6 border-b border-gray-100">
+                <div class="grid grid-cols-3 gap-2">
+                    <button type="button" data-detail-tab="about" class="detail-tab border-b-2 border-primary-500 pb-3 text-sm font-bold text-dark-900">Tentang</button>
+                    <button type="button" data-detail-tab="benefits" class="detail-tab border-b-2 border-transparent pb-3 text-sm font-bold text-dark-300">Benefit</button>
+                    <button type="button" data-detail-tab="itinerary" class="detail-tab border-b-2 border-transparent pb-3 text-sm font-bold text-dark-300">Itinerary</button>
+                </div>
+            </div>
+
+            <div class="pt-6">
+                <div data-detail-panel="about" class="detail-panel space-y-6">
+                    <div>
+                        <h2 class="text-lg font-black text-dark-900">Tentang Destinasi</h2>
+                        <p class="mt-3 text-sm leading-7 text-dark-500">
+                            {{ $destination->description ?? $destination->short_description }}
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="mb-3 text-base font-black text-dark-900">Galeri Foto</h3>
+                        <div class="grid grid-cols-2 gap-3 md:grid-cols-3">
+                            @foreach($gallery as $image)
+                                <img src="{{ $image }}" alt="{{ $destination->name }} gallery" class="h-36 w-full rounded-2xl object-cover md:h-44">
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                <div data-detail-panel="benefits" class="detail-panel hidden">
+                    <h2 class="text-lg font-black text-dark-900">Apa Saja yang Didapat</h2>
+                    <div class="mt-4 grid gap-3 md:grid-cols-2">
+                        @foreach($benefits as $benefit)
+                            <div class="flex items-center gap-3 rounded-2xl bg-primary-50 px-4 py-3 text-sm font-semibold text-dark-700">
+                                <span class="grid h-7 w-7 place-items-center rounded-full bg-primary-500 text-white">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                </span>
+                                {{ $benefit }}
                             </div>
-                        </div>
+                        @endforeach
+                    </div>
+                </div>
 
-                        {{-- Schedule List --}}
-                        <h3 class="font-bold text-dark-900 mb-3">Jadwal Tersedia</h3>
-                        <div class="space-y-3 max-h-80 overflow-y-auto">
-                            @forelse($destination->availableSchedules as $schedule)
-                                <div class="border border-gray-200 rounded-xl p-4 hover:border-primary-500 transition-colors cursor-pointer group">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="font-semibold text-dark-900 text-sm">{{ $schedule->departure_date->format('d M Y') }}</span>
-                                        <span class="text-xs px-2 py-1 rounded-full {{ $schedule->available_slots <= 5 ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600' }}">
-                                            Sisa {{ $schedule->available_slots }}
-                                        </span>
-                                    </div>
-                                    <p class="text-dark-400 text-xs">Kembali: {{ $schedule->return_date->format('d M Y') }}</p>
-                                    <div class="flex items-center justify-between mt-3">
-                                        <span class="font-bold text-primary-500">{{ $schedule->formatted_price }}</span>
-                                        @auth
-                                            <a href="{{ route('booking.create', $schedule->id) }}"
-                                               class="text-xs btn-primary !px-3 !py-1.5">Pilih</a>
-                                        @else
-                                            <a href="{{ route('login') }}" class="text-xs btn-primary !px-3 !py-1.5">Login untuk Booking</a>
-                                        @endauth
-                                    </div>
+                <div data-detail-panel="itinerary" class="detail-panel hidden">
+                    <h2 class="text-lg font-black text-dark-900">Itinerary Trip</h2>
+                    <div class="mt-5 space-y-4">
+                        @foreach($itinerary as $item)
+                            <div class="flex gap-4 rounded-2xl border border-gray-100 p-4">
+                                <div class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-dark-900 text-[11px] font-black uppercase text-white">{{ $item['day'] }}</div>
+                                <div>
+                                    <h3 class="font-black text-dark-900">{{ $item['title'] }}</h3>
+                                    <p class="mt-1 text-sm leading-6 text-dark-500">{{ $item['desc'] }}</p>
                                 </div>
-                            @empty
-                                <p class="text-dark-400 text-sm text-center py-4">Belum ada jadwal tersedia.</p>
-                            @endforelse
-                        </div>
-                    </div>
-
-                    {{-- Quick Info Card --}}
-                    <div class="card-travel p-6">
-                        <h3 class="font-bold text-dark-900 mb-4">Info Cepat</h3>
-                        <ul class="space-y-3">
-                            <li class="flex items-center justify-between text-sm">
-                                <span class="text-dark-400">Durasi</span>
-                                <span class="font-semibold text-dark-900">{{ $destination->duration_days }} Hari</span>
-                            </li>
-                            <li class="flex items-center justify-between text-sm">
-                                <span class="text-dark-400">Lokasi</span>
-                                <span class="font-semibold text-dark-900">{{ $destination->province ?? $destination->location }}</span>
-                            </li>
-                            <li class="flex items-center justify-between text-sm">
-                                <span class="text-dark-400">Kategori</span>
-                                <span class="font-semibold text-dark-900">{{ $destination->category->name }}</span>
-                            </li>
-
-                        </ul>
-                    </div>
-
-                    {{-- Need Help --}}
-                    <div class="bg-dark-900 text-white rounded-2xl p-6 text-center">
-                        <h3 class="font-bold text-lg mb-2">Butuh Bantuan?</h3>
-                        <p class="text-dark-300 text-sm mb-4">Hubungi kami untuk info lebih lanjut</p>
-                        <a href="https://wa.me/6281234567890" class="btn-primary w-full justify-center flex items-center gap-2" target="_blank">
-                            Chat WhatsApp
-                        </a>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
         </div>
-
-        {{-- Related Destinations --}}
-        @if($relatedDestinations->count() > 0)
-        <div class="mt-16 pt-16 border-t border-gray-100">
-            <h2 class="text-2xl font-bold text-dark-900 mb-8">Destinasi Serupa</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach($relatedDestinations as $related)
-                    @php
-                        $relatedImage = $related->featured_image
-                            ? asset('storage/' . $related->featured_image)
-                            : (isset($localImages[$related->slug]) ? asset($localImages[$related->slug]) : $defaultImage);
-                    @endphp
-                    <a href="{{ route('destinations.show', $related->slug) }}" class="card-travel group block">
-                        <div class="relative h-52 overflow-hidden">
-                            <img src="{{ $relatedImage }}" alt="{{ $related->name }}"
-                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                        </div>
-                        <div class="p-5">
-                            <h3 class="font-bold text-dark-900 group-hover:text-primary-500 transition-colors">{{ $related->name }}</h3>
-                            <p class="text-primary-500 font-bold mt-2">{{ $related->formatted_price }}</p>
-                        </div>
-                    </a>
-                @endforeach
-            </div>
-        </div>
-        @endif
     </div>
 </section>
+
+<section class="hidden md:block bg-white pb-20">
+    <div class="relative h-[450px] overflow-hidden bg-dark-900">
+        <img src="{{ $heroImage }}" alt="{{ $destination->name }}" class="h-full w-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-r from-dark-900/85 via-dark-900/45 to-dark-900/10"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-dark-900/70 via-transparent to-dark-900/20"></div>
+        <div class="absolute inset-x-0 bottom-0">
+            <div class="mx-auto max-w-7xl px-6 pb-14 lg:px-8">
+                <div>
+                    <p class="mb-4 inline-flex rounded-full bg-white/15 px-4 py-2 text-xs font-black uppercase tracking-widest text-white backdrop-blur">{{ $destination->category->name ?? 'Destination' }}</p>
+                    <h1 class="max-w-4xl text-6xl font-black leading-tight text-white">{{ $destination->name }}</h1>
+                    <div class="mt-7 flex items-center gap-5 text-sm text-white/75">
+                        <span class="inline-flex items-center gap-2">
+                            <span class="h-2.5 w-2.5 rounded-full bg-primary-500"></span>
+                            {{ $destination->location }}
+                        </span>
+                        <span>★ 4.5 / 5</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="mx-auto grid max-w-7xl grid-cols-[1fr_360px] gap-10 px-6 py-16 lg:px-8">
+        <div class="space-y-14">
+            <div>
+                <p class="text-xs font-black uppercase tracking-[0.25em] text-primary-500">Overview</p>
+                <h2 class="mt-3 text-4xl font-black text-dark-900">Tentang Destinasi</h2>
+                <p class="mt-5 text-base leading-8 text-dark-500">{{ $destination->description ?? $destination->short_description }}</p>
+            </div>
+
+            <div>
+                <p class="text-xs font-black uppercase tracking-[0.25em] text-primary-500">Gallery</p>
+                <h2 class="mt-3 text-3xl font-black text-dark-900">Galeri Foto</h2>
+                <div class="mt-6 grid grid-cols-3 gap-4">
+                    @foreach($gallery as $image)
+                        <img src="{{ $image }}" alt="{{ $destination->name }} gallery" class="h-60 w-full rounded-2xl object-cover shadow-lg shadow-black/5">
+                    @endforeach
+                </div>
+            </div>
+
+            <div>
+                <p class="text-xs font-black uppercase tracking-[0.25em] text-primary-500">Benefits</p>
+                <h2 class="mt-3 text-3xl font-black text-dark-900">Apa Saja yang Didapat</h2>
+                <div class="mt-6 grid grid-cols-2 gap-4">
+                    @foreach($benefits as $benefit)
+                        <div class="flex items-center gap-3 rounded-2xl border border-primary-100 bg-primary-50 px-4 py-4 text-sm font-semibold text-dark-700">
+                            <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary-500 text-white">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            </span>
+                            {{ $benefit }}
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <div>
+                <p class="text-xs font-black uppercase tracking-[0.25em] text-primary-500">Trip Plan</p>
+                <h2 class="mt-3 text-3xl font-black text-dark-900">Itinerary</h2>
+                <div class="mt-6 space-y-4">
+                    @foreach($itinerary as $item)
+                        <div class="flex gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-lg shadow-black/5">
+                            <div class="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-dark-900 text-xs font-black uppercase text-white">{{ $item['day'] }}</div>
+                            <div>
+                                <h3 class="font-black text-dark-900">{{ $item['title'] }}</h3>
+                                <p class="mt-1 text-sm leading-6 text-dark-500">{{ $item['desc'] }}</p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+
+        <aside>
+            <div class="sticky top-28 rounded-3xl border border-gray-100 bg-white p-6 shadow-2xl shadow-black/10">
+                <h3 class="text-xl font-black text-dark-900">Siap berangkat?</h3>
+                <p class="mt-2 text-sm leading-6 text-dark-400">Pilih jadwal terbaik dan amankan slot perjalananmu.</p>
+                <div class="my-6 h-px bg-gray-100"></div>
+                <div class="flex items-end justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-widest text-dark-300">Harga</p>
+                        <p class="mt-1 text-2xl font-black text-primary-500">{{ $destination->formatted_price }}</p>
+                    </div>
+                </div>
+                <a href="{{ $bookingUrl }}" class="mt-6 inline-flex h-14 w-full items-center justify-center rounded-2xl bg-primary-500 text-sm font-black text-white shadow-lg shadow-primary-500/25 transition hover:bg-primary-600">
+                    Book Now
+                </a>
+                <a href="{{ route('schedules', ['destination' => $destination->id]) }}" class="mt-3 inline-flex h-12 w-full items-center justify-center rounded-2xl bg-gray-50 text-sm font-black text-dark-700 transition hover:bg-gray-100">
+                    Lihat Jadwal
+                </a>
+            </div>
+        </aside>
+    </div>
+</section>
+
+<div class="fixed bottom-0 left-0 right-0 z-[1000] border-t border-gray-100 bg-white/95 px-4 py-3 shadow-2xl shadow-black/15 backdrop-blur md:hidden">
+    <div class="mx-auto flex max-w-sm justify-center">
+        <a href="{{ $bookingUrl }}" class="inline-flex h-12 w-full max-w-xs items-center justify-center rounded-full bg-primary-500 px-6 text-sm font-black text-white shadow-lg shadow-primary-500/25 transition hover:bg-primary-600">
+            Book Now
+        </a>
+    </div>
+</div>
 @endsection
+
+@push('scripts')
+<script>
+    document.querySelectorAll('.detail-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.detailTab;
+
+            document.querySelectorAll('.detail-tab').forEach(item => {
+                item.classList.toggle('border-primary-500', item === tab);
+                item.classList.toggle('text-dark-900', item === tab);
+                item.classList.toggle('border-transparent', item !== tab);
+                item.classList.toggle('text-dark-300', item !== tab);
+            });
+
+            document.querySelectorAll('.detail-panel').forEach(panel => {
+                panel.classList.toggle('hidden', panel.dataset.detailPanel !== target);
+            });
+        });
+    });
+</script>
+@endpush

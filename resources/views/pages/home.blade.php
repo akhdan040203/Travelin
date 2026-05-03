@@ -14,6 +14,10 @@
         'yogyakarta-heritage-tour' => 'images/destinations/yogyakarta.png',
         'dieng-plateau-adventure' => 'images/destinations/dieng.png',
     ];
+    $heroImages = array_merge($localImages, [
+        'raja-ampat-paradise' => 'https://images.unsplash.com/photo-1516690561799-46d8f74f9abf?w=1920&q=90&fit=crop',
+        'bali-island-hopping' => 'https://images.unsplash.com/photo-1577949269674-517f978815cf?w=1920&q=90&fit=crop',
+    ]);
     $defaultImg = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80&fit=crop';
 @endphp
 <section class="relative h-screen min-h-[700px] overflow-hidden" id="hero-section">
@@ -21,7 +25,9 @@
     @php
         $heroImg = $dest->featured_image
             ? asset('storage/' . $dest->featured_image)
-            : (isset($localImages[$dest->slug]) ? asset($localImages[$dest->slug]) : $defaultImg);
+            : (isset($heroImages[$dest->slug])
+                ? (str_starts_with($heroImages[$dest->slug], 'http') ? $heroImages[$dest->slug] : asset($heroImages[$dest->slug]))
+                : $defaultImg);
     @endphp
     <div class="hero-bg absolute inset-0 transition-opacity duration-1000 ease-in-out {{ $index === 0 ? 'opacity-100 z-[1]' : 'opacity-0 z-0' }}"
          data-index="{{ $index }}">
@@ -106,7 +112,9 @@
             @php
                 $cardImg = $dest->featured_image
                     ? asset('storage/' . $dest->featured_image)
-                    : (isset($localImages[$dest->slug]) ? asset($localImages[$dest->slug]) : $defaultImg);
+                    : (isset($heroImages[$dest->slug])
+                        ? (str_starts_with($heroImages[$dest->slug], 'http') ? $heroImages[$dest->slug] : asset($heroImages[$dest->slug]))
+                        : $defaultImg);
             @endphp
             <div class="hero-card absolute cursor-pointer rounded-2xl overflow-hidden
                         transition-all duration-700 ease-[cubic-bezier(0.25,0.8,0.25,1)] group hero-glass-card"
@@ -146,14 +154,6 @@
             @endforeach
         </div>
 
-        {{-- Card pagination dots --}}
-        <div class="flex items-center justify-center gap-2 mt-4" id="hero-card-pagination">
-            @foreach($featuredDestinations->take(5) as $index => $dest)
-            <button class="hero-card-dot w-2 h-2 rounded-full transition-all duration-400
-                          {{ $index === 0 ? 'bg-white w-6' : 'bg-white/30 hover:bg-white/50' }}"
-                    data-index="{{ $index }}" onclick="switchHero({{ $index }})"></button>
-            @endforeach
-        </div>
     </div>
 
     {{-- Left Side Indicator (Vertical Line with Numbers) --}}
@@ -170,7 +170,7 @@
                     
                     {{-- Dot/Circle --}}
                     <div class="side-indicator-dot w-2 h-2 rounded-full border border-white/30 bg-transparent transition-all duration-500 group-hover:border-white/60
-                                {{ $index === 0 ? 'w-4 h-4 border-primary-500 bg-primary-500 shadow-[0_0_15px_rgba(232,96,76,0.6)]' : '' }}">
+                                {{ $index === 0 ? 'w-4 h-4 border-primary-500 bg-primary-500 shadow-[0_0_15px_rgba(253,60,98,0.6)]' : '' }}">
                     </div>
                 </div>
             @endforeach
@@ -182,44 +182,54 @@
 {{-- ============================================ --}}
 {{-- SEARCH & FILTER SECTION - NEW MODEL --}}
 {{-- ============================================ --}}
-<section class="relative z-30 -mt-8 sm:-mt-10 lg:-mt-12">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white rounded-xl shadow-2xl px-3 py-3 sm:px-4 lg:px-6 lg:py-4 border border-gray-100/50">
+<section class="relative -mt-16 sm:-mt-14 lg:-mt-16" style="z-index: 1000;">
+    <div class="max-w-6xl mx-auto px-6 sm:px-6 lg:px-8">
+        <div class="relative bg-white rounded-[28px] shadow-2xl shadow-black/10 px-5 py-6 md:px-7 md:py-6 border border-gray-100/70" style="z-index: 1001;">
+            <div class="mb-5 flex items-start justify-between gap-4">
+                <div>
+                    <p class="text-xs text-dark-300 font-medium">Your Location</p>
+                    <p class="text-sm md:text-base font-bold text-dark-900 mt-1">Rembang, Indonesia</p>
+                </div>
+                <a href="{{ route('destinations.index') }}" class="hidden md:inline-flex items-center gap-2 text-[11px] font-semibold text-dark-300 hover:text-primary-500 transition-colors">
+                    Search History
+                    <span>›</span>
+                </a>
+            </div>
             <form action="{{ route('destinations.index') }}" method="GET">
-                <div class="flex items-end gap-1.5 sm:gap-2 md:gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-[1.15fr_1fr_1fr_auto] items-end gap-4 md:gap-3">
                     {{-- Column 1: Location --}}
-                    <div class="min-w-0 flex-[0.78] md:flex-1 space-y-1.5">
-                        <label class="block h-3 text-[8px] md:text-[10px] font-black text-dark-900 uppercase tracking-widest pl-1 leading-3">Location</label>
+                    <div class="min-w-0 space-y-2">
+                        <label class="block text-[11px] font-medium text-dark-300 pl-4">Location</label>
                         <div class="relative group">
-                            <div class="absolute left-2.5 md:left-3 top-1/2 -translate-y-1/2 text-dark-300 group-focus-within:text-primary-500 transition-colors">
+                            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-dark-900 group-focus-within:text-primary-500 transition-colors">
                                 <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
                             </div>
                             <input type="text" name="search" placeholder="Bali" 
-                                   class="h-10 md:h-auto w-full pl-7 md:pl-10 pr-2 md:pr-3 py-0 md:py-2.5 bg-gray-50 border-0 rounded-lg text-[10px] md:text-xs font-semibold text-dark-900 placeholder:text-dark-200 focus:ring-2 focus:ring-primary-500/15 transition-all">
+                                   class="h-12 w-full pl-10 pr-4 bg-white border border-gray-200 rounded-full text-xs font-semibold text-dark-900 placeholder:text-dark-300 focus:ring-2 focus:ring-primary-500/15 focus:border-primary-200 transition-all shadow-sm">
                         </div>
                     </div>
 
                     {{-- Divider --}}
-                    <div class="hidden md:block w-px h-8 bg-gray-200"></div>
+                    <div class="hidden"></div>
 
                     {{-- Column 2: Category --}}
-                    <div class="min-w-0 flex-1 space-y-1.5">
-                        <label class="block h-3 text-[8px] md:text-[10px] font-black text-dark-900 uppercase tracking-widest pl-1 leading-3">Category</label>
+                    <div class="min-w-0 space-y-2">
+                        <label class="block text-[11px] font-medium text-dark-300 pl-4">Category</label>
                         <div class="relative group">
-                            <div class="absolute left-2.5 md:left-3 top-1/2 -translate-y-1/2 text-dark-300 group-focus-within:text-primary-500 transition-colors pointer-events-none">
+                            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-dark-900 group-focus-within:text-primary-500 transition-colors pointer-events-none">
                                 <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                             </div>
                             <button type="button" onclick="toggleCustomDropdown('category', event)"
-                                    class="h-10 md:h-auto w-full pl-7 md:pl-10 pr-2 md:pr-10 py-0 md:py-2.5 bg-gray-50 border-0 rounded-lg text-[10px] md:text-xs font-semibold text-dark-900 text-left flex items-center justify-between gap-1 focus:ring-2 focus:ring-primary-500/15 transition-all">
+                                    class="h-12 w-full pl-10 pr-4 bg-white border border-gray-200 rounded-full text-xs font-semibold text-dark-900 text-left flex items-center justify-between gap-2 focus:ring-2 focus:ring-primary-500/15 focus:border-primary-200 transition-all shadow-sm">
                                 <span id="selected-category" class="truncate">Any</span>
-                                <svg class="w-2.5 h-2.5 md:w-3 md:h-3 text-dark-300 transition-transform duration-300 flex-shrink-0" id="arrow-category" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                                <svg class="text-dark-300 transition-transform duration-300 flex-shrink-0" id="arrow-category" style="width: 12px; height: 12px;" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                             </button>
                             
-                            <div id="list-category" class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-[100] py-1 max-h-60 overflow-y-auto">
+                            <div id="list-category" class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden py-1 max-h-60 overflow-y-auto" style="z-index: 1002;">
                                 <div class="px-4 py-2 text-[10px] font-bold text-dark-200 uppercase tracking-widest bg-gray-50/50">Select Category</div>
-                                <div onclick="selectCustomOption('category', '', 'Any')" class="px-4 py-2.5 text-xs font-semibold text-dark-600 hover:bg-primary-50 hover:text-primary-600 cursor-pointer transition-colors">Any</div>
+                                <div onclick="selectCustomOption('category', '', 'Any')" class="px-4 py-2.5 text-xs font-semibold cursor-pointer transition-colors {{ request('category', '') === '' ? 'bg-red-50 text-primary-600' : 'text-dark-600 hover:bg-red-50 hover:text-primary-600' }}">Any</div>
                                 @foreach(\App\Models\Category::where('is_active', true)->get() as $cat)
-                                    <div onclick="selectCustomOption('category', '{{ $cat->slug }}', '{{ $cat->name }}')" class="px-4 py-2.5 text-xs font-semibold text-dark-600 hover:bg-primary-50 hover:text-primary-600 cursor-pointer transition-colors">{{ $cat->name }}</div>
+                                    <div onclick="selectCustomOption('category', '{{ $cat->slug }}', '{{ $cat->name }}')" class="px-4 py-2.5 text-xs font-semibold cursor-pointer transition-colors {{ request('category') === $cat->slug ? 'bg-red-50 text-primary-600' : 'text-dark-600 hover:bg-red-50 hover:text-primary-600' }}">{{ $cat->name }}</div>
                                 @endforeach
                             </div>
                             <input type="hidden" name="category" value="">
@@ -234,27 +244,27 @@
                     </div>
 
                     {{-- Divider --}}
-                    <div class="hidden md:block w-px h-8 bg-gray-200"></div>
+                    <div class="hidden"></div>
 
                     {{-- Column 3: Price --}}
-                    <div class="min-w-0 flex-1 space-y-1.5">
-                        <label class="block h-3 text-[8px] md:text-[10px] font-black text-dark-900 uppercase tracking-widest pl-1 leading-3">Price</label>
+                    <div class="min-w-0 space-y-2">
+                        <label class="block text-[11px] font-medium text-dark-300 pl-4">Price</label>
                         <div class="relative group">
-                            <div class="absolute left-2.5 md:left-3 top-1/2 -translate-y-1/2 text-dark-300 group-focus-within:text-primary-500 transition-colors pointer-events-none">
+                            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-dark-900 group-focus-within:text-primary-500 transition-colors pointer-events-none">
                                 <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.407 2.67 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.407-2.67-1M12 16c-1.052 0-2.017-.323-2.482-.857l-1.018 1.018A6 6 0 0012 18V16z" /></svg>
                             </div>
                             <button type="button" onclick="toggleCustomDropdown('price', event)"
-                                    class="h-10 md:h-auto w-full pl-7 md:pl-10 pr-2 md:pr-10 py-0 md:py-2.5 bg-gray-50 border-0 rounded-lg text-[10px] md:text-xs font-semibold text-dark-900 text-left flex items-center justify-between gap-1 focus:ring-2 focus:ring-primary-500/15 transition-all">
+                                    class="h-12 w-full pl-10 pr-4 bg-white border border-gray-200 rounded-full text-xs font-semibold text-dark-900 text-left flex items-center justify-between gap-2 focus:ring-2 focus:ring-primary-500/15 focus:border-primary-200 transition-all shadow-sm">
                                 <span id="selected-price" class="truncate">Any</span>
-                                <svg class="w-2.5 h-2.5 md:w-3 md:h-3 text-dark-300 transition-transform duration-300 flex-shrink-0" id="arrow-price" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                                <svg class="text-dark-300 transition-transform duration-300 flex-shrink-0" id="arrow-price" style="width: 12px; height: 12px;" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                             </button>
                             
-                            <div id="list-price" class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-[100] py-1">
+                            <div id="list-price" class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden py-1" style="z-index: 1002;">
                                 <div class="px-4 py-2 text-[10px] font-bold text-dark-200 uppercase tracking-widest bg-gray-50/50">Select Price Range</div>
-                                <div onclick="selectCustomOption('price', '', 'Any')" class="px-4 py-2.5 text-xs font-semibold text-dark-600 hover:bg-primary-50 hover:text-primary-600 cursor-pointer transition-colors">Any</div>
-                                <div onclick="selectCustomOption('price', '0-1000000', 'Under 1jt')" class="px-4 py-2.5 text-xs font-semibold text-dark-600 hover:bg-primary-50 hover:text-primary-600 cursor-pointer transition-colors">Under 1jt</div>
-                                <div onclick="selectCustomOption('price', '1000000-5000000', '1-5jt')" class="px-4 py-2.5 text-xs font-semibold text-dark-600 hover:bg-primary-50 hover:text-primary-600 cursor-pointer transition-colors">1-5jt</div>
-                                <div onclick="selectCustomOption('price', '10000000+', '10jt+')" class="px-4 py-2.5 text-xs font-semibold text-dark-600 hover:bg-primary-50 hover:text-primary-600 cursor-pointer transition-colors">10jt+</div>
+                                <div onclick="selectCustomOption('price', '', 'Any')" class="px-4 py-2.5 text-xs font-semibold cursor-pointer transition-colors {{ request('price_range', '') === '' ? 'bg-red-50 text-primary-600' : 'text-dark-600 hover:bg-red-50 hover:text-primary-600' }}">Any</div>
+                                <div onclick="selectCustomOption('price', '0-1000000', 'Under 1jt')" class="px-4 py-2.5 text-xs font-semibold cursor-pointer transition-colors {{ request('price_range') === '0-1000000' ? 'bg-red-50 text-primary-600' : 'text-dark-600 hover:bg-red-50 hover:text-primary-600' }}">Under 1jt</div>
+                                <div onclick="selectCustomOption('price', '1000000-5000000', '1-5jt')" class="px-4 py-2.5 text-xs font-semibold cursor-pointer transition-colors {{ request('price_range') === '1000000-5000000' ? 'bg-red-50 text-primary-600' : 'text-dark-600 hover:bg-red-50 hover:text-primary-600' }}">1-5jt</div>
+                                <div onclick="selectCustomOption('price', '10000000+', '10jt+')" class="px-4 py-2.5 text-xs font-semibold cursor-pointer transition-colors {{ request('price_range') === '10000000+' ? 'bg-red-50 text-primary-600' : 'text-dark-600 hover:bg-red-50 hover:text-primary-600' }}">10jt+</div>
                             </div>
                             <input type="hidden" name="price_range" value="">
                             <select class="hidden" name="price_old" 
@@ -268,9 +278,9 @@
                     </div>
 
                     {{-- Search Button (inline) --}}
-                    <button type="submit" aria-label="Search" class="flex-shrink-0 w-11 md:w-auto h-10 md:h-auto bg-dark-900 text-white px-0 md:px-4 py-0 md:py-2.5 rounded-lg font-bold text-[10px] md:text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-primary-500 transition-all shadow-lg shadow-dark-900/10 hover:shadow-primary-500/30 group active:scale-95">
-                        <span class="hidden md:inline">Search</span>
-                        <svg class="w-4 h-4 md:w-3.5 md:h-3.5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24">
+                    <button type="submit" aria-label="Search" class="w-full md:w-28 h-12 bg-primary-500 text-white rounded-full font-semibold text-xs flex items-center justify-center gap-2 hover:bg-primary-600 transition-all shadow-lg shadow-primary-500/25 group active:scale-95">
+                        <span>Search</span>
+                        <svg class="hidden md:block w-3.5 h-3.5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24">
                             <circle cx="11" cy="11" r="7"/>
                             <path stroke-linecap="round" d="M20 20l-4.2-4.2"/>
                         </svg>
@@ -288,19 +298,19 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-start justify-between md:justify-center gap-2 md:gap-10 max-w-3xl mx-auto">
             <div class="px-1 md:px-4 py-3 text-center flex-1">
-                <img src="{{ asset('images/logo_travel.png') }}" alt="Travel experiences" class="mx-auto mb-3 h-12 w-12 object-contain">
+                <img src="{{ asset('images/logo_travel.png') }}?v={{ filemtime(public_path('images/logo_travel.png')) }}" alt="Travel experiences" class="mx-auto mb-3 h-12 w-12 object-contain">
                 <p class="text-primary-500 text-xs font-black leading-none">24,000+</p>
                 <p class="text-dark-900 text-sm font-bold mt-2">Travel Experiences</p>
             </div>
 
             <div class="px-1 md:px-4 py-3 text-center flex-1">
-                <img src="{{ asset('images/logo_destinasion.png') }}" alt="Countries" class="mx-auto mb-3 h-12 w-12 object-contain">
+                <img src="{{ asset('images/logo_destinasion.png') }}?v={{ filemtime(public_path('images/logo_destinasion.png')) }}" alt="Countries" class="mx-auto mb-3 h-12 w-12 object-contain">
                 <p class="text-primary-500 text-xs font-black leading-none">55+</p>
                 <p class="text-dark-900 text-sm font-bold mt-2">Countries</p>
             </div>
 
             <div class="px-1 md:px-4 py-3 text-center flex-1">
-                <img src="{{ asset('images/logo_user.png') }}" alt="Users per year" class="mx-auto mb-3 h-12 w-12 object-contain">
+                <img src="{{ asset('images/logo_user.png') }}?v={{ filemtime(public_path('images/logo_user.png')) }}" alt="Users per year" class="mx-auto mb-3 h-12 w-12 object-contain">
                 <p class="text-primary-500 text-xs font-black leading-none">84 Million+</p>
                 <p class="text-dark-900 text-sm font-bold mt-2">User per year</p>
             </div>
@@ -371,14 +381,9 @@
                         <h4 class="text-sm md:text-lg font-black text-dark-900 mb-1 md:mb-2 truncate">{{ $dest->name }}</h4>
                         <p class="text-dark-400 text-[10px] md:text-xs line-clamp-1 md:line-clamp-2 mb-3 md:mb-4 leading-relaxed">{{ $dest->short_description }}</p>
                         
-                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-t border-gray-50 pt-3 md:pt-4">
-                            <div class="min-w-0">
-                                <span class="text-[8px] md:text-[10px] text-dark-300 uppercase tracking-widest block mb-0.5">Start From</span>
-                                <span class="block truncate text-[11px] md:text-lg font-black text-dark-900">Rp{{ number_format($dest->price, 0, ',', '.') }}</span>
-                            </div>
-                            <a href="{{ route('destinations.show', $dest->slug) }}" class="inline-flex w-full md:w-auto items-center justify-center gap-1.5 rounded-lg bg-dark-900 px-2.5 py-2 text-[8px] md:bg-transparent md:px-0 md:py-0 md:text-[10px] font-black uppercase tracking-widest text-white md:text-dark-900 hover:bg-primary-500 md:hover:bg-transparent md:hover:text-primary-500 transition-colors">
-                                Book Now
-                                <svg class="w-3 h-3 md:w-4 md:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                        <div class="flex justify-end border-t border-gray-50 pt-3 md:pt-4">
+                            <a href="{{ route('destinations.show', $dest->slug) }}" class="inline-flex items-center gap-1 border-b-2 border-dark-900 pb-0.5 text-[10px] md:text-xs font-black uppercase tracking-widest text-dark-900 hover:border-primary-500 hover:text-primary-500 transition-colors">
+                                Detail
                             </a>
                         </div>
                     </div>
@@ -443,7 +448,7 @@
                     </div>
 
                     {{-- Card Content --}}
-                    <div class="p-6 pt-2">
+                    <div class="p-6 pt-2 flex flex-col flex-1">
                         <h3 class="text-xl font-bold text-dark-900 mb-3 leading-tight">{{ $dest->name }}</h3>
                         
                         {{-- Icon-free Details (List) --}}
@@ -476,14 +481,13 @@
                         </div>
 
                         {{-- Pricing and CTA --}}
-                        <div class="flex items-center justify-between mt-auto">
-                            <div>
+                        <div class="mt-auto flex items-end justify-between gap-4">
+                            <div class="min-w-0 flex-1">
                                 <span class="text-xs text-dark-300 line-through block">Rp {{ number_format($dest->price * 1.2, 0, ',', '.') }}</span>
                                 <span class="text-xl font-bold text-primary-500">Rp {{ number_format($dest->price, 0, ',', '.') }}</span>
-                                <span class="text-[10px] text-dark-400 block mt-0.5 uppercase tracking-widest font-medium">start from</span>
                             </div>
-                            <a href="{{ route('destinations.show', $dest->slug) }}" class="px-6 py-2.5 bg-dark-900 text-white text-[10px] font-bold rounded-xl shadow-lg hover:bg-primary-500 transition-all uppercase tracking-widest">
-                                Book Now
+                            <a href="{{ route('destinations.show', $dest->slug) }}" class="inline-flex h-9 flex-shrink-0 items-center justify-center rounded-lg bg-dark-900 px-4 text-[10px] font-black uppercase tracking-widest text-white hover:bg-primary-500 transition-colors">
+                                Book
                             </a>
                         </div>
                     </div>
@@ -891,18 +895,6 @@
             }
         });
 
-        // 6. Update card pagination dots
-        document.querySelectorAll('.hero-card-dot').forEach(dot => {
-            const i = parseInt(dot.dataset.index);
-            if (i === index) {
-                dot.classList.remove('bg-white/30', 'w-2');
-                dot.classList.add('bg-white', 'w-6');
-            } else {
-                dot.classList.remove('bg-white', 'w-6');
-                dot.classList.add('bg-white/30', 'w-2');
-            }
-        });
-
         // 7. Update sidebar indicator
         document.querySelectorAll('.side-indicator-item').forEach(item => {
             const i = parseInt(item.dataset.index);
@@ -913,11 +905,11 @@
                 num.classList.remove('text-white/20', 'opacity-0');
                 num.classList.add('text-primary-500', 'opacity-100');
                 dot.classList.remove('w-2', 'h-2', 'border-white/30', 'bg-transparent');
-                dot.classList.add('w-4', 'h-4', 'border-primary-500', 'bg-primary-500', 'shadow-[0_0_15px_rgba(232,96,76,0.6)]');
+                dot.classList.add('w-4', 'h-4', 'border-primary-500', 'bg-primary-500', 'shadow-[0_0_15px_rgba(253,60,98,0.6)]');
             } else {
                 num.classList.remove('text-primary-500', 'opacity-100');
                 num.classList.add('text-white/20', 'opacity-0');
-                dot.classList.remove('w-4', 'h-4', 'border-primary-500', 'bg-primary-500', 'shadow-[0_0_15px_rgba(232,96,76,0.6)]');
+                dot.classList.remove('w-4', 'h-4', 'border-primary-500', 'bg-primary-500', 'shadow-[0_0_15px_rgba(253,60,98,0.6)]');
                 dot.classList.add('w-2', 'h-2', 'border-white/30', 'bg-transparent');
             }
         });

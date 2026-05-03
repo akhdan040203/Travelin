@@ -15,18 +15,18 @@
     /* Font Family */
     --font-sans: 'Inter', 'Figtree', ui-sans-serif, system-ui, sans-serif;
 
-    /* Primary Colors (Coral/Red) */
-    --color-primary-50: #fef2f0;
-    --color-primary-100: #fde3de;
-    --color-primary-200: #fcc7bd;
-    --color-primary-300: #f9a08f;
-    --color-primary-400: #f4715a;
-    --color-primary-500: #E8604C;
-    --color-primary-600: #d4432e;
-    --color-primary-700: #b23522;
-    --color-primary-800: #932f20;
-    --color-primary-900: #7a2c21;
-    --color-primary-950: #42130c;
+    /* Primary Colors (Rose Red) */
+    --color-primary-50: #fff1f4;
+    --color-primary-100: #ffe3e9;
+    --color-primary-200: #ffcbd7;
+    --color-primary-300: #ff9daf;
+    --color-primary-400: #ff6482;
+    --color-primary-500: #fd3c62;
+    --color-primary-600: #e51f4b;
+    --color-primary-700: #c2143d;
+    --color-primary-800: #9f1536;
+    --color-primary-900: #881733;
+    --color-primary-950: #4c0618;
 
     /* Dark Colors */
     --color-dark: #1B1B2F;
@@ -66,11 +66,11 @@
     border-radius: 9999px;
     font-weight: 600;
     transition: all 0.3s ease-in-out;
-    box-shadow: 0 10px 15px -3px rgb(232 96 76 / 0.25);
+    box-shadow: 0 10px 15px -3px rgb(253 60 98 / 0.25);
 
     &:hover {
         background-color: var(--color-primary-600);
-        box-shadow: 0 20px 25px -5px rgb(232 96 76 / 0.3);
+        box-shadow: 0 20px 25px -5px rgb(253 60 98 / 0.3);
         transform: translateY(-2px);
     }
 
