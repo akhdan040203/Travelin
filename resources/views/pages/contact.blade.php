@@ -57,43 +57,15 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('contact.store') }}" method="POST" class="space-y-5">
-                        @csrf
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <div>
-                                <label for="name" class="block text-sm font-medium text-dark-700 mb-2">Nama Lengkap *</label>
-                                <input type="text" name="name" id="name" value="{{ old('name') }}" required
-                                       class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 text-sm">
-                                @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                            </div>
-                            <div>
-                                <label for="email" class="block text-sm font-medium text-dark-700 mb-2">Email *</label>
-                                <input type="email" name="email" id="email" value="{{ old('email') }}" required
-                                       class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 text-sm">
-                                @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <div>
-                                <label for="phone" class="block text-sm font-medium text-dark-700 mb-2">Telepon</label>
-                                <input type="text" name="phone" id="phone" value="{{ old('phone') }}"
-                                       class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 text-sm">
-                            </div>
-                            <div>
-                                <label for="subject" class="block text-sm font-medium text-dark-700 mb-2">Subjek *</label>
-                                <input type="text" name="subject" id="subject" value="{{ old('subject') }}" required
-                                       class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 text-sm">
-                                @error('subject') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                            </div>
-                        </div>
+                    <form id="whatsapp-contact-form" class="space-y-5">
                         <div>
-                            <label for="message" class="block text-sm font-medium text-dark-700 mb-2">Pesan *</label>
-                            <textarea name="message" id="message" rows="5" required
-                                      class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 text-sm resize-none">{{ old('message') }}</textarea>
-                            @error('message') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            <label for="whatsapp-message" class="block text-sm font-medium text-dark-700 mb-2">Pesan *</label>
+                            <textarea name="message" id="whatsapp-message" rows="7" required placeholder="Tulis pesan kamu di sini..."
+                                      class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 text-sm resize-none"></textarea>
+                            <p id="whatsapp-message-error" class="hidden text-red-500 text-xs mt-1">Pesan wajib diisi.</p>
                         </div>
                         <button type="submit" class="btn-primary !px-8 flex items-center gap-2">
-                            Kirim Pesan
+                            Send
                         </button>
                     </form>
                 </div>
@@ -102,3 +74,27 @@
     </div>
 </section>
 @endsection
+
+@push('scripts')
+<script>
+    document.getElementById('whatsapp-contact-form')?.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const input = document.getElementById('whatsapp-message');
+        const error = document.getElementById('whatsapp-message-error');
+        const message = input.value.trim();
+
+        if (!message) {
+            error?.classList.remove('hidden');
+            input.focus();
+            return;
+        }
+
+        error?.classList.add('hidden');
+
+        const phone = '6281234567890';
+        const text = encodeURIComponent(message);
+        window.open(`https://wa.me/${phone}?text=${text}`, '_blank', 'noopener');
+    });
+</script>
+@endpush
