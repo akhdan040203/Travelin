@@ -174,7 +174,7 @@
                             Login
                         </a>
                         <a href="{{ route('register') }}" class="block w-full px-5 py-4 rounded-2xl text-center text-sm font-bold text-white bg-primary-500 shadow-lg shadow-primary-500/20 active:scale-[0.98] transition-all">
-                            Register Now
+                            Register
                         </a>
                     </div>
                 @endauth

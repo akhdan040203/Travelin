@@ -51,7 +51,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div class="max-w-xl lg:pl-16">
                 {{-- Left: Text Content --}}
-                <div class="pt-32 lg:pt-0">
+                <div class="pt-12 sm:pt-20 lg:pt-0">
 
                     {{-- Destination Name (Large) --}}
                     @php
@@ -184,18 +184,23 @@
 {{-- ============================================ --}}
 <section class="relative -mt-16 sm:-mt-14 lg:-mt-16" style="z-index: 1000;">
     <div class="max-w-6xl mx-auto px-6 sm:px-6 lg:px-8">
-        <div class="relative bg-white rounded-[28px] shadow-2xl shadow-black/10 px-5 py-6 md:px-7 md:py-6 border border-gray-100/70" style="z-index: 1001;">
-            <div class="mb-5 flex items-start justify-between gap-4">
+        <div id="home-search-card" class="relative bg-white rounded-[28px] shadow-2xl shadow-black/10 px-5 py-5 md:px-7 md:py-6 border border-gray-100/70 cursor-pointer md:cursor-default transition-all duration-300" style="z-index: 1001;">
+            <div class="mb-0 md:mb-5 flex items-start justify-between gap-4">
                 <div>
                     <p class="text-xs text-dark-300 font-medium">Your Location</p>
                     <p class="text-sm md:text-base font-bold text-dark-900 mt-1">Rembang, Indonesia</p>
                 </div>
+                <button type="button" id="home-search-toggle" aria-label="Buka filter" class="md:hidden flex h-9 w-9 items-center justify-center rounded-full bg-gray-50 text-dark-400 transition-all duration-300">
+                    <svg id="home-search-toggle-icon" class="h-4 w-4 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
                 <a href="{{ route('destinations.index') }}" class="hidden md:inline-flex items-center gap-2 text-[11px] font-semibold text-dark-300 hover:text-primary-500 transition-colors">
                     Search History
                     <span>›</span>
                 </a>
             </div>
-            <form action="{{ route('destinations.index') }}" method="GET">
+            <form id="home-search-form" action="{{ route('destinations.index') }}" method="GET" class="max-h-0 overflow-hidden opacity-0 mt-0 transition-all duration-300 md:max-h-none md:overflow-visible md:opacity-100 md:mt-0">
                 <div class="grid grid-cols-1 md:grid-cols-[1.15fr_1fr_1fr_auto] items-end gap-4 md:gap-3">
                     {{-- Column 1: Location --}}
                     <div class="min-w-0 space-y-2">
@@ -946,6 +951,54 @@
                 if (heroInterval) clearInterval(heroInterval);
             });
             heroSection.addEventListener('mouseleave', () => startAutoPlay());
+        }
+
+        const searchCard = document.getElementById('home-search-card');
+        const searchForm = document.getElementById('home-search-form');
+        const searchToggle = document.getElementById('home-search-toggle');
+        const searchToggleIcon = document.getElementById('home-search-toggle-icon');
+        if (searchCard && searchForm) {
+            const setSearchOpen = (isOpen) => {
+                searchCard.dataset.open = isOpen ? 'true' : 'false';
+                searchToggle?.setAttribute('aria-label', isOpen ? 'Tutup filter' : 'Buka filter');
+                searchToggleIcon?.classList.toggle('rotate-180', isOpen);
+                searchCard.classList.toggle('py-6', isOpen);
+                searchCard.classList.toggle('py-5', !isOpen);
+                searchForm.classList.toggle('max-h-[520px]', isOpen);
+                searchForm.classList.toggle('opacity-100', isOpen);
+                searchForm.classList.toggle('mt-5', isOpen);
+                searchForm.classList.toggle('max-h-0', !isOpen);
+                searchForm.classList.toggle('opacity-0', !isOpen);
+                searchForm.classList.toggle('mt-0', !isOpen);
+            };
+
+            searchCard.addEventListener('click', () => {
+                if (window.innerWidth >= 768 || searchCard.dataset.open === 'true') return;
+                setSearchOpen(true);
+            });
+
+            searchToggle?.addEventListener('click', (event) => {
+                event.stopPropagation();
+                if (window.innerWidth >= 768) return;
+                setSearchOpen(searchCard.dataset.open !== 'true');
+            });
+
+            searchForm.addEventListener('click', (event) => {
+                event.stopPropagation();
+            });
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 768) {
+                    searchCard.dataset.open = 'false';
+                    searchToggleIcon?.classList.remove('rotate-180');
+                searchCard.classList.remove('py-5');
+                searchCard.classList.add('py-6');
+                searchForm.classList.remove('max-h-0', 'opacity-0', 'mt-0');
+                searchForm.classList.add('max-h-[520px]', 'opacity-100', 'mt-5');
+                } else if (searchCard.dataset.open !== 'true') {
+                    setSearchOpen(false);
+                }
+            });
         }
         startAutoPlay();
     });

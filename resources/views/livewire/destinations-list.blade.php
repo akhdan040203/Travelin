@@ -12,19 +12,24 @@
             ];
             $selectedPriceLabel = $priceLabels[$priceRange] ?? 'Any';
         @endphp
-        <div class="relative bg-white rounded-[28px] shadow-2xl shadow-black/10 px-5 py-6 md:px-7 md:py-6 border border-gray-100/70" style="z-index: 1001;">
-            <div class="mb-5 flex items-start justify-between gap-4">
+        <div id="destination-search-card" class="relative bg-white rounded-[28px] shadow-2xl shadow-black/10 px-5 py-5 md:px-7 md:py-6 border border-gray-100/70 cursor-pointer md:cursor-default transition-all duration-300" style="z-index: 1001;">
+            <div class="mb-0 md:mb-5 flex items-start justify-between gap-4">
                 <div>
                     <p class="text-xs text-dark-300 font-medium">Your Location</p>
                     <p class="text-sm md:text-base font-bold text-dark-900 mt-1">{{ $search ?: 'Rembang, Indonesia' }}</p>
                 </div>
+                <button type="button" id="destination-search-toggle" aria-label="Buka filter" class="md:hidden flex h-9 w-9 items-center justify-center rounded-full bg-gray-50 text-dark-400 transition-all duration-300">
+                    <svg id="destination-search-toggle-icon" class="h-4 w-4 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
                 <div class="hidden">
                 <a href="{{ route('destinations.index') }}" class="hidden md:inline-flex items-center gap-2 text-[11px] font-semibold text-dark-300 hover:text-primary-500 transition-colors">
                     <span>›</span>
                 </a>
                 </div>
             </div>
-            <div>
+            <div id="destination-search-form" class="max-h-0 overflow-hidden opacity-0 mt-0 transition-all duration-300 md:max-h-none md:overflow-visible md:opacity-100 md:mt-0">
                 <div class="grid grid-cols-1 md:grid-cols-[1.15fr_1fr_1fr_auto] items-end gap-4 md:gap-3">
                     {{-- Column 1: Location --}}
                     <div class="min-w-0 space-y-2">
@@ -222,6 +227,67 @@
 
 @push('scripts')
 <script>
+    function setDestinationSearchOpen(isOpen) {
+        const card = document.getElementById('destination-search-card');
+        const form = document.getElementById('destination-search-form');
+        const toggle = document.getElementById('destination-search-toggle');
+        const icon = document.getElementById('destination-search-toggle-icon');
+        if (!card || !form) return;
+
+        card.dataset.open = isOpen ? 'true' : 'false';
+        toggle?.setAttribute('aria-label', isOpen ? 'Tutup filter' : 'Buka filter');
+        icon?.classList.toggle('rotate-180', isOpen);
+        card.classList.toggle('py-6', isOpen);
+        card.classList.toggle('py-5', !isOpen);
+        form.classList.toggle('max-h-[520px]', isOpen);
+        form.classList.toggle('opacity-100', isOpen);
+        form.classList.toggle('mt-5', isOpen);
+        form.classList.toggle('max-h-0', !isOpen);
+        form.classList.toggle('opacity-0', !isOpen);
+        form.classList.toggle('mt-0', !isOpen);
+    }
+
+    document.addEventListener('click', (event) => {
+        const card = document.getElementById('destination-search-card');
+        const form = document.getElementById('destination-search-form');
+        const toggle = event.target.closest('#destination-search-toggle');
+
+        if (!card || !form || window.innerWidth >= 768) return;
+
+        if (toggle) {
+            event.stopPropagation();
+            setDestinationSearchOpen(card.dataset.open !== 'true');
+            return;
+        }
+
+        if (event.target.closest('#destination-search-form')) {
+            event.stopPropagation();
+            return;
+        }
+
+        if (event.target.closest('#destination-search-card') && card.dataset.open !== 'true') {
+            setDestinationSearchOpen(true);
+        }
+    });
+
+    window.addEventListener('resize', () => {
+        const card = document.getElementById('destination-search-card');
+        const form = document.getElementById('destination-search-form');
+        const icon = document.getElementById('destination-search-toggle-icon');
+        if (!card || !form) return;
+
+        if (window.innerWidth >= 768) {
+            card.dataset.open = 'false';
+            icon?.classList.remove('rotate-180');
+            card.classList.remove('py-5');
+            card.classList.add('py-6');
+            form.classList.remove('max-h-0', 'opacity-0', 'mt-0');
+            form.classList.add('max-h-[520px]', 'opacity-100', 'mt-5');
+        } else if (card.dataset.open !== 'true') {
+            setDestinationSearchOpen(false);
+        }
+    });
+
     function toggleDestinationDropdown(name, event) {
         event.stopPropagation();
 
