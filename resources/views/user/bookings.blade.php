@@ -12,7 +12,7 @@
 
         <div class="space-y-4">
             @forelse($bookings ?? [] as $booking)
-                <a href="{{ route('user.bookings.show', $booking->booking_code) }}" class="block rounded-3xl bg-white p-5 shadow-lg shadow-black/5 border border-gray-100 hover:-translate-y-0.5 hover:shadow-xl transition-all">
+                <div class="rounded-3xl bg-white p-5 shadow-lg shadow-black/5 border border-gray-100 transition-all">
                     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div class="min-w-0">
                             <p class="text-xs font-bold uppercase tracking-widest text-primary-500">{{ $booking->booking_code }}</p>
@@ -27,7 +27,17 @@
                             <span class="rounded-full bg-primary-50 px-4 py-2 text-xs font-black uppercase text-primary-600">{{ $booking->status }}</span>
                         </div>
                     </div>
-                </a>
+                    <div class="mt-5 flex flex-col gap-3 sm:flex-row">
+                        <a href="{{ route('user.bookings.show', $booking->booking_code) }}" class="inline-flex h-11 flex-1 items-center justify-center rounded-2xl bg-gray-50 px-5 text-xs font-black text-dark-900 hover:bg-gray-100 transition">
+                            Detail
+                        </a>
+                        @if($booking->status === 'pending')
+                            <a href="{{ route('user.bookings.pay', $booking->booking_code) }}" class="inline-flex h-11 flex-1 items-center justify-center rounded-2xl bg-primary-500 px-5 text-xs font-black text-white shadow-lg shadow-primary-500/20 hover:bg-primary-600 transition">
+                                Bayar Ulang
+                            </a>
+                        @endif
+                    </div>
+                </div>
             @empty
                 <div class="rounded-3xl bg-white p-10 text-center shadow-lg shadow-black/5 border border-gray-100">
                     <h2 class="text-xl font-black text-dark-900">Belum ada pembelian</h2>

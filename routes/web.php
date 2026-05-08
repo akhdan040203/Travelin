@@ -30,6 +30,7 @@ Route::middleware(['auth', 'verified'])->prefix('user')->name('user.')->group(fu
     Route::get('/dashboard', fn() => redirect()->route('user.bookings'))->name('dashboard');
     Route::get('/bookings', [UserDashboardController::class, 'bookings'])->name('bookings');
     Route::get('/bookings/{bookingCode}', [BookingController::class, 'show'])->name('bookings.show');
+    Route::get('/bookings/{bookingCode}/pay', [BookingController::class, 'repay'])->name('bookings.pay');
     Route::get('/wishlist', [UserDashboardController::class, 'wishlist'])->name('wishlist');
     Route::post('/wishlist/{destination}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
     Route::delete('/wishlist/{destination}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
@@ -37,6 +38,7 @@ Route::middleware(['auth', 'verified'])->prefix('user')->name('user.')->group(fu
 
 Route::get('/booking/{scheduleId}', [BookingController::class, 'create'])->middleware('auth')->name('booking.create');
 Route::post('/booking', [BookingController::class, 'store'])->middleware('auth')->name('booking.store');
+Route::post('/midtrans/notification', [BookingController::class, 'midtransNotification'])->name('midtrans.notification');
 
 // Redirect Breeze's default dashboard to our custom one
 Route::get('dashboard', fn() => redirect()->route('user.bookings'))

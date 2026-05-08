@@ -31,7 +31,7 @@
                 </button>
             @else
                 <div class="rounded-2xl bg-yellow-50 p-4 text-sm font-semibold text-yellow-700">
-                    Midtrans belum aktif. Isi `MIDTRANS_SERVER_KEY` dan install package Midtrans untuk mode testing.
+                    Midtrans belum bisa membuat token pembayaran. Pastikan Sandbox Server Key dan Client Key benar, lalu bersihkan cache config.
                 </div>
                 <a href="{{ route('user.bookings.show', $booking->booking_code) }}" class="mt-4 inline-flex h-12 w-full items-center justify-center rounded-2xl bg-dark-900 px-6 text-sm font-black text-white">
                     Lihat Booking
@@ -44,7 +44,12 @@
 
 @if($snapToken)
 @push('scripts')
-<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('services.midtrans.client_key', env('MIDTRANS_CLIENT_KEY')) }}"></script>
+@php
+    $midtransIsProduction = filter_var(config('services.midtrans.is_production', env('MIDTRANS_IS_PRODUCTION', false)), FILTER_VALIDATE_BOOLEAN);
+    $midtransSnapUrl = $midtransIsProduction ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js';
+    $midtransClientKey = trim((string) config('services.midtrans.client_key', env('MIDTRANS_CLIENT_KEY')));
+@endphp
+<script src="{{ $midtransSnapUrl }}" data-client-key="{{ $midtransClientKey }}"></script>
 <script>
     document.getElementById('pay-button')?.addEventListener('click', function () {
         window.snap.pay('{{ $snapToken }}', {

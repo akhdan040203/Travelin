@@ -35,6 +35,12 @@
                 <span class="font-bold text-dark-500">Total Pembayaran</span>
                 <span class="text-xl font-black text-primary-500">{{ $booking->formatted_total_price }}</span>
             </div>
+
+            @if($booking->status === 'pending')
+                <a href="{{ route('user.bookings.pay', $booking->booking_code) }}" class="mt-5 inline-flex h-13 w-full items-center justify-center rounded-2xl bg-primary-500 px-6 py-4 text-sm font-black text-white shadow-lg shadow-primary-500/25 hover:bg-primary-600 transition">
+                    Bayar Ulang
+                </a>
+            @endif
         </div>
     </div>
 </section>
