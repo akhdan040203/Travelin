@@ -45,12 +45,13 @@
             const navbar = document.getElementById('navbar');
             if (!navbar) return;
 
+            const shell = document.getElementById('navbar-shell');
             const logo = document.getElementById('logo-text');
             const isHeroPage = navbar.dataset.transparent === 'true';
 
             if (window.scrollY > 50) {
-                navbar.classList.add('bg-white', 'shadow-lg', 'shadow-black/5');
-                navbar.classList.remove('bg-transparent');
+                shell?.classList.add('bg-white/85', 'border-gray-100');
+                shell?.classList.remove('bg-white/10', 'border-white/20');
                 document.querySelectorAll('.nav-link-hero').forEach(el => {
                     el.classList.remove('text-white');
                     el.classList.add('text-dark-900');
@@ -61,8 +62,8 @@
                 }
             } else {
                 if (isHeroPage) {
-                    navbar.classList.remove('bg-white', 'shadow-lg', 'shadow-black/5');
-                    navbar.classList.add('bg-transparent');
+                    shell?.classList.remove('bg-white/85', 'border-gray-100');
+                    shell?.classList.add('bg-white/10', 'border-white/20');
                     document.querySelectorAll('.nav-link-hero').forEach(el => {
                         el.classList.add('text-white');
                         el.classList.remove('text-dark-900');
@@ -72,8 +73,8 @@
                         logo.classList.remove('text-dark-900');
                     }
                 } else {
-                    navbar.classList.add('bg-white', 'shadow-lg', 'shadow-black/5');
-                    navbar.classList.remove('bg-transparent');
+                    shell?.classList.add('bg-white/85', 'border-gray-100');
+                    shell?.classList.remove('bg-white/10', 'border-white/20');
                     document.querySelectorAll('.nav-link-hero').forEach(el => {
                         el.classList.remove('text-white');
                         el.classList.add('text-dark-900');

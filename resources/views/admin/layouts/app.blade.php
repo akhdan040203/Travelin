@@ -56,7 +56,7 @@
         {{-- Main Content --}}
         <div class="flex-1 lg:ml-64">
             {{-- Top Bar --}}
-            <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-gray-100 h-16 flex items-center px-6">
+            <header class="sticky top-0 z-40 bg-transparent h-16 flex items-center px-6">
                 <button id="sidebar-toggle" class="lg:hidden px-3 py-2 rounded-lg hover:bg-gray-100 mr-4 text-xs font-bold text-dark-900">
                     MENU
                 </button>

@@ -31,6 +31,7 @@ Route::middleware(['auth', 'verified'])->prefix('user')->name('user.')->group(fu
     Route::get('/bookings', [UserDashboardController::class, 'bookings'])->name('bookings');
     Route::get('/bookings/{bookingCode}', [BookingController::class, 'show'])->name('bookings.show');
     Route::get('/bookings/{bookingCode}/pay', [BookingController::class, 'repay'])->name('bookings.pay');
+    Route::post('/bookings/{bookingCode}/mark-paid', [BookingController::class, 'markPaidFromSnap'])->name('bookings.markPaid');
     Route::get('/wishlist', [UserDashboardController::class, 'wishlist'])->name('wishlist');
     Route::post('/wishlist/{destination}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
     Route::delete('/wishlist/{destination}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');

@@ -13,12 +13,17 @@
         @php
             $selectedDestination = $destinations->firstWhere('id', (int) request('destination'));
         @endphp
-        <form action="{{ route('schedules') }}" method="GET" class="relative mt-8 mx-auto max-w-6xl rounded-[28px] bg-white px-5 py-6 md:px-7 md:py-6 shadow-2xl shadow-black/10 border border-gray-100/70" style="z-index: 1000;">
-            <div class="mb-5 flex items-start justify-between gap-4 text-left">
+        <form id="schedule-search-card" action="{{ route('schedules') }}" method="GET" class="relative mt-8 mx-auto max-w-6xl rounded-[28px] bg-white px-5 py-5 md:px-7 md:py-6 shadow-2xl shadow-black/10 border border-gray-100/70 cursor-pointer md:cursor-default transition-all duration-300" style="z-index: 2000;">
+            <div class="mb-0 md:mb-5 flex items-start justify-between gap-4 text-left">
                 <div>
                     <p class="text-xs text-dark-300 font-medium">Your Schedule</p>
                     <p class="text-sm md:text-base font-bold text-dark-900 mt-1">{{ $selectedDestination->name ?? 'Semua Destinasi' }}</p>
                 </div>
+                <button type="button" id="schedule-search-toggle" aria-label="Buka filter" class="md:hidden flex h-9 w-9 items-center justify-center rounded-full bg-gray-50 text-dark-400 transition-all duration-300">
+                    <svg id="schedule-search-toggle-icon" class="h-4 w-4 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
                 @if(request()->filled('departure_date') || request()->filled('destination'))
                     <a href="{{ route('schedules') }}" class="hidden md:inline-flex items-center gap-2 text-[11px] font-semibold text-dark-300 hover:text-primary-500 transition-colors">
                         Reset
@@ -26,6 +31,7 @@
                     </a>
                 @endif
             </div>
+            <div id="schedule-search-form" class="max-h-0 overflow-hidden opacity-0 mt-0 transition-all duration-300 md:max-h-none md:overflow-visible md:opacity-100 md:mt-0">
             <div class="grid grid-cols-1 md:grid-cols-[1fr_1.4fr_auto] items-end gap-4 md:gap-3">
                 <div class="min-w-0 space-y-2 text-left">
                     <label for="departure_date" class="block text-[11px] font-medium text-dark-300 pl-4">Tanggal</label>
@@ -49,7 +55,7 @@
                             <svg class="text-dark-300 transition-transform duration-300 flex-shrink-0" id="schedule-arrow-destination" style="width: 12px; height: 12px;" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                         </button>
 
-                        <div id="schedule-list-destination" class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-[120] py-1 max-h-60 overflow-y-auto">
+                        <div id="schedule-list-destination" class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-[2200] py-1 max-h-60 overflow-y-auto">
                             <div class="px-4 py-2 text-[10px] font-bold text-dark-200 uppercase tracking-widest bg-gray-50/50">Select Destination</div>
                             <div onclick="selectScheduleOption('destination', '', 'Semua Destinasi')" class="px-4 py-2.5 text-xs font-semibold cursor-pointer transition-colors {{ request('destination', '') === '' ? 'bg-red-50 text-primary-600' : 'text-dark-600 hover:bg-red-50 hover:text-primary-600' }}">Semua Destinasi</div>
                             @foreach($destinations as $destination)
@@ -69,6 +75,7 @@
                 </button>
 
             </div>
+            </div>
         </form>
     </div>
 </section>
@@ -77,7 +84,26 @@
 <section class="py-12 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         @if($schedules->count() > 0)
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="md:hidden divide-y divide-gray-100 border-y border-gray-100">
+                @foreach($schedules as $schedule)
+                    <div class="flex items-center gap-4 border-l-4 border-primary-500 bg-white py-5 pl-4 pr-1">
+                        <div class="w-14 h-14 bg-primary-50 rounded-2xl flex flex-col items-center justify-center flex-shrink-0">
+                            <span class="text-lg font-black text-primary-500">{{ $schedule->departure_date->format('d') }}</span>
+                            <span class="text-[10px] font-bold text-primary-500 uppercase">{{ $schedule->departure_date->format('M') }}</span>
+                        </div>
+                        <a href="{{ route('destinations.show', $schedule->destination->slug) }}" class="min-w-0 flex-1">
+                            <h3 class="font-black text-dark-900 leading-tight truncate">{{ $schedule->destination->name }}</h3>
+                            <p class="mt-1 text-sm text-dark-400 truncate">{{ $schedule->destination->location }}</p>
+                            <div class="mt-2 flex items-center justify-between gap-3">
+                                <span class="text-xs font-bold text-primary-500">{{ $schedule->formatted_price }}</span>
+                                <span class="text-[10px] font-semibold text-dark-300">Sisa {{ $schedule->available_slots }} slot</span>
+                            </div>
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+
+            <div class="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($schedules as $schedule)
                     <div class="card-travel p-6">
                         {{-- Date Header --}}
@@ -155,6 +181,67 @@
 
 @push('scripts')
 <script>
+    function setScheduleSearchOpen(isOpen) {
+        const card = document.getElementById('schedule-search-card');
+        const form = document.getElementById('schedule-search-form');
+        const toggle = document.getElementById('schedule-search-toggle');
+        const icon = document.getElementById('schedule-search-toggle-icon');
+        if (!card || !form) return;
+
+        card.dataset.open = isOpen ? 'true' : 'false';
+        toggle?.setAttribute('aria-label', isOpen ? 'Tutup filter' : 'Buka filter');
+        icon?.classList.toggle('rotate-180', isOpen);
+        card.classList.toggle('py-6', isOpen);
+        card.classList.toggle('py-5', !isOpen);
+        form.classList.toggle('max-h-[520px]', isOpen);
+        form.classList.toggle('overflow-visible', isOpen);
+        form.classList.toggle('opacity-100', isOpen);
+        form.classList.toggle('mt-5', isOpen);
+        form.classList.toggle('max-h-0', !isOpen);
+        form.classList.toggle('overflow-hidden', !isOpen);
+        form.classList.toggle('opacity-0', !isOpen);
+        form.classList.toggle('mt-0', !isOpen);
+    }
+
+    document.addEventListener('click', (event) => {
+        const card = document.getElementById('schedule-search-card');
+        const toggle = event.target.closest('#schedule-search-toggle');
+        if (!card || window.innerWidth >= 768) return;
+
+        if (toggle) {
+            event.stopPropagation();
+            setScheduleSearchOpen(card.dataset.open !== 'true');
+            return;
+        }
+
+        if (event.target.closest('#schedule-search-form')) {
+            event.stopPropagation();
+            return;
+        }
+
+        if (event.target.closest('#schedule-search-card') && card.dataset.open !== 'true') {
+            setScheduleSearchOpen(true);
+        }
+    });
+
+    window.addEventListener('resize', () => {
+        const card = document.getElementById('schedule-search-card');
+        const form = document.getElementById('schedule-search-form');
+        const icon = document.getElementById('schedule-search-toggle-icon');
+        if (!card || !form) return;
+
+        if (window.innerWidth >= 768) {
+            card.dataset.open = 'false';
+            icon?.classList.remove('rotate-180');
+            card.classList.remove('py-5');
+            card.classList.add('py-6');
+            form.classList.remove('max-h-0', 'overflow-hidden', 'opacity-0', 'mt-0');
+            form.classList.add('max-h-[520px]', 'overflow-visible', 'opacity-100', 'mt-5');
+        } else if (card.dataset.open !== 'true') {
+            setScheduleSearchOpen(false);
+        }
+    });
+
     function toggleScheduleDropdown(name, event) {
         event.stopPropagation();
 

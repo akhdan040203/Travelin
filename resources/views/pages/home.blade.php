@@ -544,21 +544,18 @@
                 $testimonials = [
                     [
                         'name' => 'Sarah Johnson',
-                        'role' => 'Cultural Enthusiast',
                         'image' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80&fit=crop',
                         'text' => 'Trip ke Labuan Bajo benar-benar luar biasa! Semua detail sudah diurus, mulai dari kapal pinisi hingga spot diving rahasia. Benar-benar all-inclusive tanpa pusing.',
                         'rating' => 5
                     ],
                     [
                         'name' => 'Michael Chen',
-                        'role' => 'Photography Hobbyist',
                         'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80&fit=crop',
                         'text' => 'Pengalaman sunrise di Bromo dengan tim Travelin sangat profesional. Guide-nya tahu persis sudut terbaik untuk memotret tanpa harus berdesakan dengan turis lain.',
                         'rating' => 5
                     ],
                     [
                         'name' => 'Dian Kusuma',
-                        'role' => 'Solo Traveler',
                         'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80&fit=crop',
                         'text' => 'Awalnya ragu ikut open trip sendirian, tapi ternyata asik banget! Kenalan baru dan semua fasilitas hotelnya jempolan. Pasti bakal booking lagi untuk destinasi berikutnya.',
                         'rating' => 5
@@ -568,11 +565,6 @@
 
             @foreach($testimonials as $testi)
             <div class="bg-white p-8 rounded-lg shadow-xl shadow-black/5 border border-gray-100/50 flex flex-col hover:-translate-y-2 transition-all duration-500 h-full">
-                {{-- Quote Icon --}}
-                <div class="mb-6 text-primary-500/20">
-                    <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21L14.017 18C14.017 16.899 14.899 16 16 16L18 16L18 14C18 11.791 16.209 10 14 10L14 8C17.314 8 20 10.686 20 14L20 16L20 21L14.017 21ZM4 21L4 18C4 16.899 4.899 16 6 16L8 16L8 14C8 11.791 6.209 10 4 10L4 8C7.314 8 10 10.686 10 14L10 16L10 21L4 21Z"/></svg>
-                </div>
-                
                 {{-- Review Text --}}
                 <p class="text-dark-400 text-sm italic leading-relaxed mb-8 flex-grow">"{{ $testi['text'] }}"</p>
                 
@@ -581,7 +573,6 @@
                     <img src="{{ $testi['image'] }}" alt="{{ $testi['name'] }}" class="w-12 h-12 rounded-full object-cover">
                     <div class="flex-1">
                         <h4 class="text-sm font-black text-dark-900 leading-tight">{{ $testi['name'] }}</h4>
-                        <p class="text-[10px] text-dark-300 font-bold uppercase tracking-wider mt-0.5">{{ $testi['role'] }}</p>
                     </div>
                     {{-- Stars --}}
                     <div class="flex items-center gap-0.5">

@@ -51,9 +51,20 @@
 @endphp
 <script src="{{ $midtransSnapUrl }}" data-client-key="{{ $midtransClientKey }}"></script>
 <script>
+    async function markBookingPaid() {
+        await fetch('{{ route('user.bookings.markPaid', $booking->booking_code) }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            }
+        });
+    }
+
     document.getElementById('pay-button')?.addEventListener('click', function () {
         window.snap.pay('{{ $snapToken }}', {
-            onSuccess: function () {
+            onSuccess: async function () {
+                await markBookingPaid();
                 window.location.href = '{{ route('user.bookings.show', $booking->booking_code) }}';
             },
             onPending: function () {

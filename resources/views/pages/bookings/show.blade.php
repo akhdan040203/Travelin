@@ -27,7 +27,7 @@
                 </div>
                 <div class="rounded-2xl bg-gray-50 p-4">
                     <span class="text-xs text-dark-400">Status</span>
-                    <p class="mt-1 font-black text-primary-500">{{ strtoupper($booking->status) }}</p>
+                    <p class="mt-1 font-black text-primary-500">{{ $booking->status_label }}</p>
                 </div>
             </div>
 

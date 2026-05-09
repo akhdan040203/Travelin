@@ -24,15 +24,15 @@
                                 <p class="text-xs text-dark-300">Total</p>
                                 <p class="font-black text-dark-900">{{ $booking->formatted_total_price ?? '-' }}</p>
                             </div>
-                            <span class="rounded-full bg-primary-50 px-4 py-2 text-xs font-black uppercase text-primary-600">{{ $booking->status }}</span>
+                            <span class="rounded-full bg-primary-50 px-4 py-2 text-xs font-black text-primary-600">{{ $booking->status_label }}</span>
                         </div>
                     </div>
-                    <div class="mt-5 flex flex-col gap-3 sm:flex-row">
-                        <a href="{{ route('user.bookings.show', $booking->booking_code) }}" class="inline-flex h-11 flex-1 items-center justify-center rounded-2xl bg-gray-50 px-5 text-xs font-black text-dark-900 hover:bg-gray-100 transition">
+                    <div class="mt-5 grid gap-3 sm:grid-cols-2">
+                        <a href="{{ route('user.bookings.show', $booking->booking_code) }}" class="inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-gray-50 px-5 py-3 text-xs font-black text-dark-900 hover:bg-gray-100 transition">
                             Detail
                         </a>
                         @if($booking->status === 'pending')
-                            <a href="{{ route('user.bookings.pay', $booking->booking_code) }}" class="inline-flex h-11 flex-1 items-center justify-center rounded-2xl bg-primary-500 px-5 text-xs font-black text-white shadow-lg shadow-primary-500/20 hover:bg-primary-600 transition">
+                            <a href="{{ route('user.bookings.pay', $booking->booking_code) }}" class="inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-primary-500 px-5 py-3 text-xs font-black text-white shadow-lg shadow-primary-500/20 hover:bg-primary-600 transition">
                                 Bayar Ulang
                             </a>
                         @endif

@@ -14,9 +14,9 @@
             <div class="flex items-center justify-between mb-4">
                 <h2 class="font-bold text-dark-900">Informasi Booking</h2>
                 @php
-                    $colors = ['pending'=>'bg-yellow-100 text-yellow-700 border-yellow-200','confirmed'=>'bg-blue-100 text-blue-700 border-blue-200','paid'=>'bg-emerald-100 text-emerald-700 border-emerald-200','completed'=>'bg-emerald-100 text-emerald-700 border-emerald-200','cancelled'=>'bg-red-100 text-red-700 border-red-200','refunded'=>'bg-gray-100 text-gray-700 border-gray-200'];
+                    $colors = ['pending'=>'bg-yellow-100 text-yellow-700 border-yellow-200','paid'=>'bg-emerald-100 text-emerald-700 border-emerald-200','confirmed'=>'bg-blue-100 text-blue-700 border-blue-200','ongoing'=>'bg-indigo-100 text-indigo-700 border-indigo-200','completed'=>'bg-emerald-100 text-emerald-700 border-emerald-200','cancelled'=>'bg-red-100 text-red-700 border-red-200','refunded'=>'bg-gray-100 text-gray-700 border-gray-200'];
                 @endphp
-                <span class="px-3 py-1.5 rounded-full text-xs font-semibold border {{ $colors[$booking->status] ?? 'bg-gray-100' }}">{{ ucfirst($booking->status) }}</span>
+                <span class="px-3 py-1.5 rounded-full text-xs font-semibold border {{ $colors[$booking->status] ?? 'bg-gray-100' }}">{{ $booking->status_label }}</span>
             </div>
             <div class="bg-primary-50 rounded-xl p-4 text-center mb-4">
                 <span class="text-dark-400 text-xs block">Kode Booking</span>
@@ -80,7 +80,7 @@
             <form action="{{ route('admin.bookings.updateStatus', $booking) }}" method="POST" class="space-y-3">
                 @csrf @method('PATCH')
                 <select name="status" class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm bg-white focus:border-primary-500">
-                    @foreach(['pending'=>'Pending','confirmed'=>'Dikonfirmasi','paid'=>'Sudah Dibayar','completed'=>'Selesai','cancelled'=>'Dibatalkan','refunded'=>'Refund'] as $val => $label)
+                    @foreach(['pending'=>'Menunggu Pembayaran','paid'=>'Menunggu Konfirmasi Admin','confirmed'=>'Waiting Keberangkatan','ongoing'=>'Trip Berjalan','completed'=>'Selesai','cancelled'=>'Dibatalkan','refunded'=>'Refund'] as $val => $label)
                         <option value="{{ $val }}" {{ $booking->status === $val ? 'selected' : '' }}>{{ $label }}</option>
                     @endforeach
                 </select>
@@ -107,7 +107,7 @@
                 @if($booking->confirmed_at)
                 <div class="flex items-center gap-3">
                     <div class="w-2 h-2 rounded-full bg-blue-500"></div>
-                    <div><p class="font-medium text-dark-900">Dikonfirmasi</p><p class="text-dark-400">{{ $booking->confirmed_at->format('d M Y, H:i') }}</p></div>
+                    <div><p class="font-medium text-dark-900">Waiting keberangkatan</p><p class="text-dark-400">{{ $booking->confirmed_at->format('d M Y, H:i') }}</p></div>
                 </div>
                 @endif
                 @if($booking->cancelled_at)

@@ -38,7 +38,7 @@ class AdminBookingController extends Controller
     public function updateStatus(Request $request, Booking $booking)
     {
         $validated = $request->validate([
-            'status' => 'required|in:pending,confirmed,paid,completed,cancelled,refunded',
+            'status' => 'required|in:pending,paid,confirmed,ongoing,completed,cancelled,refunded',
         ]);
 
         $booking->update([

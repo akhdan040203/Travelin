@@ -96,6 +96,23 @@ class BookingController extends Controller
         return view('pages.bookings.payment', compact('booking', 'snapToken'));
     }
 
+    public function markPaidFromSnap(Request $request, $bookingCode)
+    {
+        $booking = $request->user()
+            ->bookings()
+            ->where('booking_code', $bookingCode)
+            ->firstOrFail();
+
+        if ($booking->status === 'pending') {
+            $booking->update([
+                'status' => 'paid',
+                'paid_at' => $booking->paid_at ?? now(),
+            ]);
+        }
+
+        return response()->json(['message' => 'OK']);
+    }
+
     public function midtransNotification(Request $request)
     {
         $payload = $request->all();

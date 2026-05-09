@@ -9,7 +9,7 @@
                class="flex-1 min-w-[200px] px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20">
         <select name="status" class="px-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-white focus:border-primary-500">
             <option value="">Semua Status</option>
-            @foreach(['pending'=>'Pending','confirmed'=>'Confirmed','paid'=>'Paid','completed'=>'Completed','cancelled'=>'Cancelled','refunded'=>'Refunded'] as $val => $label)
+            @foreach(['pending'=>'Menunggu Pembayaran','paid'=>'Menunggu Konfirmasi Admin','confirmed'=>'Waiting Keberangkatan','ongoing'=>'Trip Berjalan','completed'=>'Selesai','cancelled'=>'Dibatalkan','refunded'=>'Refund'] as $val => $label)
                 <option value="{{ $val }}" {{ request('status') == $val ? 'selected' : '' }}>{{ $label }}</option>
             @endforeach
         </select>
@@ -34,7 +34,7 @@
             <tbody class="divide-y divide-gray-50">
                 @forelse($bookings as $booking)
                 @php
-                    $colors = ['pending'=>'bg-yellow-100 text-yellow-700','confirmed'=>'bg-blue-100 text-blue-700','paid'=>'bg-emerald-100 text-emerald-700','completed'=>'bg-emerald-100 text-emerald-700','cancelled'=>'bg-red-100 text-red-700','refunded'=>'bg-gray-100 text-gray-700'];
+                    $colors = ['pending'=>'bg-yellow-100 text-yellow-700','paid'=>'bg-emerald-100 text-emerald-700','confirmed'=>'bg-blue-100 text-blue-700','ongoing'=>'bg-indigo-100 text-indigo-700','completed'=>'bg-emerald-100 text-emerald-700','cancelled'=>'bg-red-100 text-red-700','refunded'=>'bg-gray-100 text-gray-700'];
                 @endphp
                 <tr class="hover:bg-gray-50/50">
                     <td class="px-5 py-4">
@@ -51,8 +51,19 @@
                     </td>
                     <td class="px-5 py-4 text-center text-sm font-medium text-dark-900">{{ $booking->participants }}</td>
                     <td class="px-5 py-4 text-sm font-bold text-dark-900">{{ $booking->formatted_total_price }}</td>
-                    <td class="px-5 py-4 text-center">
-                        <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold {{ $colors[$booking->status] ?? 'bg-gray-100' }}">{{ ucfirst($booking->status) }}</span>
+                    <td class="px-5 py-4">
+                        <form action="{{ route('admin.bookings.updateStatus', $booking) }}" method="POST" class="flex items-center justify-center gap-2">
+                            @csrf
+                            @method('PATCH')
+                            <select name="status" class="w-52 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-dark-700 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20">
+                                @foreach(['pending'=>'Menunggu Pembayaran','paid'=>'Menunggu Konfirmasi Admin','confirmed'=>'Waiting Keberangkatan','ongoing'=>'Trip Berjalan','completed'=>'Selesai','cancelled'=>'Dibatalkan','refunded'=>'Refund'] as $val => $label)
+                                    <option value="{{ $val }}" {{ $booking->status === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                            <button type="submit" class="rounded-xl bg-dark-900 px-3 py-2 text-xs font-black text-white transition hover:bg-primary-500">
+                                Update
+                            </button>
+                        </form>
                     </td>
                     <td class="px-5 py-4 text-center">
                         <a href="{{ route('admin.bookings.show', $booking) }}" class="text-xs font-semibold text-primary-500 hover:text-primary-600" title="Detail">

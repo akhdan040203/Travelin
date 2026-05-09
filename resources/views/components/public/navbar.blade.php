@@ -6,17 +6,17 @@
     $useTransparentNavbar = ($transparent ?? false) && ! auth()->check();
 @endphp
 <nav id="navbar" data-transparent="{{ $useTransparentNavbar ? 'true' : 'false' }}"
-     class="fixed top-0 left-0 right-0 transition-all duration-300 {{ $useTransparentNavbar ? 'bg-transparent' : 'bg-white shadow-lg shadow-black/5' }}"
+     class="fixed top-0 left-0 right-0 bg-transparent transition-all duration-300"
      style="z-index: 99990;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-20">
+        <div id="navbar-shell" class="mt-3 flex h-14 items-center justify-between rounded-full border px-4 shadow-lg shadow-black/5 backdrop-blur-xl transition-all duration-300 {{ $useTransparentNavbar ? 'border-white/20 bg-white/10' : 'border-gray-100 bg-white/80' }}">
             {{-- Logo --}}
             <a href="{{ route('home') }}" class="flex items-center gap-2 group">
-                <div class="w-7 h-7 md:w-10 md:h-10 rounded-full flex items-center justify-center overflow-hidden transition-transform group-hover:scale-110">
+                <div class="w-7 h-7 rounded-full flex items-center justify-center overflow-hidden transition-transform group-hover:scale-110">
                     <img src="{{ asset('images/logoo3.png') }}" alt="Travelin Logo" 
                          class="w-full h-full object-contain rounded-full">
                 </div>
-                <span id="logo-text" class="text-base md:text-xl font-bold transition-colors {{ $useTransparentNavbar ? 'text-white' : 'text-dark-900' }}">
+                <span id="logo-text" class="text-base font-bold transition-colors {{ $useTransparentNavbar ? 'text-white' : 'text-dark-900' }}">
                     Travel<span class="text-primary-500">in</span>
                 </span>
             </a>
@@ -35,7 +35,7 @@
 
                 @foreach($navItems as $item)
                     <a href="{{ route($item['route']) }}"
-                       class="nav-link-hero px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:bg-primary-50 hover:text-primary-500
+                       class="nav-link-hero px-4 py-2 rounded-full text-xs font-medium transition-all duration-300 hover:bg-white/15 hover:text-primary-500
                               {{ $useTransparentNavbar ? 'text-white' : 'text-dark-900' }}
                               {{ request()->routeIs($item['route']) ? '!text-primary-500 bg-primary-50' : '' }}">
                         {{ $item['label'] }}
@@ -44,26 +44,26 @@
             </div>
 
             {{-- Auth Buttons --}}
-            <div class="hidden md:flex items-center justify-end gap-3 min-w-[180px]">
+            <div class="hidden md:flex items-center justify-end gap-2 min-w-[180px]">
                 @auth
                     @if(auth()->user()->role === 'admin')
                         <a href="{{ route('admin.dashboard') }}"
-                           class="nav-link-hero px-4 py-2 rounded-full text-sm font-medium transition-all {{ $useTransparentNavbar ? 'text-white' : 'text-dark-900' }} hover:text-primary-500">
+                           class="nav-link-hero px-4 py-2 rounded-full text-xs font-medium transition-all {{ $useTransparentNavbar ? 'text-white' : 'text-dark-900' }} hover:text-primary-500">
                             Admin
                         </a>
                         <form method="POST" action="{{ route('logout') }}" class="inline">
                             @csrf
-                            <button type="submit" class="btn-primary text-sm !px-5 !py-2.5">
+                            <button type="submit" class="rounded-full bg-white px-5 py-2 text-xs font-bold text-dark-900 shadow-sm transition hover:bg-primary-500 hover:text-white">
                                 Logout
                             </button>
                         </form>
                     @else
                         <details class="relative group" style="z-index: 99995;">
-                            <summary class="list-none cursor-pointer flex items-center gap-2 rounded-full pl-2 pr-4 py-2 transition-all {{ $useTransparentNavbar ? 'text-white hover:bg-white/10' : 'text-dark-900 hover:bg-gray-100' }}">
-                                <span class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-sm font-bold shadow-md shadow-primary-500/20">
+                            <summary class="list-none cursor-pointer flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-3 transition-all {{ $useTransparentNavbar ? 'text-white hover:bg-white/10' : 'text-dark-900 hover:bg-gray-100' }}">
+                                <span class="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-xs font-bold shadow-md shadow-primary-500/20">
                                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                                 </span>
-                                <span class="text-sm font-semibold max-w-32 truncate">{{ auth()->user()->name }}</span>
+                                <span class="text-xs font-semibold max-w-32 truncate">{{ auth()->user()->name }}</span>
                                 <svg class="w-4 h-4 opacity-60 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
@@ -89,17 +89,26 @@
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                                         History
                                     </a>
+                                    <div class="my-2 h-px bg-gray-100"></div>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-red-500 hover:bg-red-50 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M15.75 9V5.75A2.75 2.75 0 0013 3H6.75A2.75 2.75 0 004 5.75v12.5A2.75 2.75 0 006.75 21H13a2.75 2.75 0 002.75-2.75V15M10 12h10m0 0-3-3m3 3-3 3"/></svg>
+                                            Logout
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </details>
                     @endif
                 @else
                     <a href="{{ route('login') }}"
-                       class="nav-link-hero px-5 py-2.5 rounded-full text-sm font-medium transition-all {{ $useTransparentNavbar ? 'text-white hover:bg-white/10' : 'text-dark-900 hover:bg-gray-100' }}">
+                       class="nav-link-hero rounded-full border border-white/50 px-5 py-2 text-xs font-medium transition-all {{ $useTransparentNavbar ? 'text-white hover:bg-white/10' : 'text-dark-900 hover:bg-gray-100' }}">
                         Login
                     </a>
-                    <a href="{{ route('register') }}" class="btn-primary text-sm !px-5 !py-2.5">
-                        Register
+                    <a href="{{ route('register') }}" class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-xs font-bold text-dark-900 shadow-sm transition hover:bg-primary-500 hover:text-white">
+                        Sign Up
+                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 17 17 7M9 7h8v8"/></svg>
                     </a>
                 @endauth
             </div>

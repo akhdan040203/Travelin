@@ -80,9 +80,9 @@
                 <p class="text-dark-400 text-xs">{{ $booking->booking_code }} · {{ $booking->user->name ?? '-' }}</p>
             </div>
             @php
-                $colors = ['pending'=>'bg-yellow-100 text-yellow-700','confirmed'=>'bg-blue-100 text-blue-700','paid'=>'bg-emerald-100 text-emerald-700','completed'=>'bg-emerald-100 text-emerald-700','cancelled'=>'bg-red-100 text-red-700','refunded'=>'bg-gray-100 text-gray-700'];
+                $colors = ['pending'=>'bg-yellow-100 text-yellow-700','paid'=>'bg-emerald-100 text-emerald-700','confirmed'=>'bg-blue-100 text-blue-700','ongoing'=>'bg-indigo-100 text-indigo-700','completed'=>'bg-emerald-100 text-emerald-700','cancelled'=>'bg-red-100 text-red-700','refunded'=>'bg-gray-100 text-gray-700'];
             @endphp
-            <span class="px-2 py-1 rounded-full text-[10px] font-semibold {{ $colors[$booking->status] ?? 'bg-gray-100' }}">{{ ucfirst($booking->status) }}</span>
+            <span class="px-2 py-1 rounded-full text-[10px] font-semibold {{ $colors[$booking->status] ?? 'bg-gray-100' }}">{{ $booking->status_label }}</span>
         </div>
         @endforeach
         @if($recentBookings->isEmpty())

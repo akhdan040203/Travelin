@@ -78,10 +78,25 @@ class Booking extends Model
             'pending' => 'yellow',
             'confirmed' => 'blue',
             'paid' => 'green',
+            'ongoing' => 'indigo',
             'completed' => 'emerald',
             'cancelled' => 'red',
             'refunded' => 'gray',
             default => 'gray',
+        };
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return match ($this->status) {
+            'pending' => 'Menunggu Pembayaran',
+            'paid' => 'Menunggu Konfirmasi Admin',
+            'confirmed' => 'Waiting Keberangkatan',
+            'ongoing' => 'Trip Berjalan',
+            'completed' => 'Selesai',
+            'cancelled' => 'Dibatalkan',
+            'refunded' => 'Refund',
+            default => ucfirst((string) $this->status),
         };
     }
 }
