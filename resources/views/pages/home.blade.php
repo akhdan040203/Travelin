@@ -400,6 +400,34 @@
 </section>
 
 {{-- ============================================ --}}
+{{-- TRAVEL VIDEO HIGHLIGHT SECTION --}}
+{{-- ============================================ --}}
+<section class="py-12 md:py-16 bg-white">
+    <div class="relative h-[360px] md:h-[460px] overflow-hidden shadow-2xl shadow-black/10">
+        <video class="absolute inset-0 h-full w-full object-cover"
+               autoplay
+               muted
+               loop
+               playsinline
+               preload="metadata"
+               poster="{{ asset('images/destinations/bali.png') }}">
+            <source src="{{ asset('images/video-sea.mp4') }}" type="video/mp4">
+        </video>
+        <div class="absolute inset-0 bg-dark-900/45"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-dark-900/70 via-dark-900/20 to-transparent"></div>
+
+        <div class="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
+            <h2 class="max-w-3xl text-3xl md:text-5xl font-black leading-tight text-white">
+                Rasakan Liburan Pantai yang Lebih Hidup
+            </h2>
+            <p class="mt-5 max-w-2xl text-sm md:text-base font-medium leading-relaxed text-white/80">
+                Dari pasir putih, ombak tenang, sampai perjalanan bareng teman baru, semua bisa kamu mulai dari paket open trip pilihan Travelin.
+            </p>
+        </div>
+    </div>
+</section>
+
+{{-- ============================================ --}}
 {{-- NEW POPULAR DESTINATIONS SECTION --}}
 {{-- ============================================ --}}
 <section class="pt-12 pb-8 md:pt-20 md:pb-12 bg-white relative overflow-hidden" id="popular-destinations">
@@ -622,28 +650,6 @@
                 </div>
             </div>
             @endforeach
-        </div>
-    </div>
-</section>
-
-{{-- ============================================ --}}
-{{-- FOOTER CTA BANNER --}}
-{{-- ============================================ --}}
-<section class="py-20 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="relative h-[500px] rounded-lg overflow-hidden flex items-center justify-center text-center">
-            <img src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1920&q=80&fit=crop" class="absolute inset-0 w-full h-full object-cover">
-            <div class="absolute inset-0 bg-dark-900/40 backdrop-blur-[2px]"></div>
-            <div class="relative z-10 px-6">
-                <h2 class="text-4xl md:text-6xl font-black text-white leading-tight mb-8">
-                    Get Ready Your Thrilling <br>
-                    Journey Into Nature Today
-                </h2>
-                <p class="text-white/80 text-lg mb-12 max-w-2xl mx-auto font-medium">Excited to plan your next adventure? Let's explore details to make it an unforgettable experience!</p>
-                <a href="{{ route('destinations.index') }}" class="inline-flex items-center px-10 py-5 bg-white text-dark-900 font-black text-[11px] uppercase tracking-[0.2em] rounded-lg hover:bg-primary-500 hover:text-white transition-all shadow-2xl active:scale-95">
-                    Get Started Now
-                </a>
-            </div>
         </div>
     </div>
 </section>

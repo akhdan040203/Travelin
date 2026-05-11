@@ -6,7 +6,7 @@
             <div class="col-span-2 lg:col-span-2">
                 <div class="flex items-center gap-3 mb-6">
                     <div class="w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center overflow-hidden">
-                        <img src="{{ asset('images/logoo3.png') }}" alt="Travelin Logo" class="w-full h-full object-contain rounded-full">
+                        <img src="{{ asset('images/travelin-mark-transparent.png') }}?v={{ filemtime(public_path('images/travelin-mark-transparent.png')) }}" alt="Travelin Logo" class="w-full h-full object-contain rounded-full">
                     </div>
                     <span class="text-xl md:text-2xl font-black text-dark-900 tracking-tighter">Travel<span class="text-primary-500">in</span></span>
                 </div>
@@ -46,17 +46,6 @@
                     <li><a href="#" class="text-dark-300 hover:text-primary-500 text-xs font-bold transition-all">Cookie Policy</a></li>
                 </ul>
             </div>
-        </div>
-
-        {{-- Social Icons --}}
-        <div class="flex justify-end gap-3 mb-12">
-            @php $socials = ['twitter', 'facebook', 'linkedin', 'instagram']; @endphp
-            @foreach($socials as $social)
-                <a href="#" class="w-10 h-10 border border-gray-100 rounded-full flex items-center justify-center text-dark-300 hover:border-dark-900 hover:text-dark-900 transition-all group">
-                    <span class="sr-only">{{ $social }}</span>
-                    <div class="w-4 h-4 bg-current"></div> {{-- Placeholder for icons --}}
-                </a>
-            @endforeach
         </div>
 
         {{-- Bottom Copyright --}}

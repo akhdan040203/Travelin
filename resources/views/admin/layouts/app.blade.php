@@ -17,7 +17,7 @@
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-dark-900 text-white transform transition-transform duration-300 lg:translate-x-0 -translate-x-full">
             <div class="flex items-center gap-3 px-6 h-16 border-b border-white/10">
                 <div class="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden">
-                    <img src="{{ asset('images/logoo3.png') }}" alt="Travelin Logo" class="w-full h-full object-contain rounded-full">
+                    <img src="{{ asset('images/travelin-mark-transparent.png') }}?v={{ filemtime(public_path('images/travelin-mark-transparent.png')) }}" alt="Travelin Logo" class="w-full h-full object-contain rounded-full">
                 </div>
                 <span class="text-lg font-bold">Travel<span class="text-primary-500">in</span> <span class="text-xs font-normal text-dark-400">Admin</span></span>
             </div>
@@ -64,8 +64,12 @@
                     <h1 class="text-lg font-bold text-dark-900">@yield('page_title', 'Dashboard')</h1>
                 </div>
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-sm font-bold">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center overflow-hidden text-white text-sm font-bold">
+                        @if(auth()->user()->avatar_url)
+                            <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="h-full w-full object-cover">
+                        @else
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        @endif
                     </div>
                     <span class="text-sm font-medium text-dark-900 hidden sm:block">{{ auth()->user()->name }}</span>
                 </div>

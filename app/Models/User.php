@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -81,5 +82,10 @@ class User extends Authenticatable
     public function hasWishlisted(int $destinationId): bool
     {
         return $this->wishlists()->where('destination_id', $destinationId)->exists();
+    }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        return $this->avatar ? Storage::url($this->avatar) : null;
     }
 }

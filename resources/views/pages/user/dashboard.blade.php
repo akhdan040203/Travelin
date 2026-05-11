@@ -7,8 +7,12 @@
     {{-- Welcome Header --}}
     <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
         <div class="flex items-center gap-4">
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-primary-500/30">
-                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center overflow-hidden text-white text-xl font-bold shadow-lg shadow-primary-500/30">
+                @if(auth()->user()->avatar_url)
+                    <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="h-full w-full object-cover">
+                @else
+                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                @endif
             </div>
             <div>
                 <h1 class="text-2xl font-bold text-dark-900">Halo, {{ auth()->user()->name }}!</h1>

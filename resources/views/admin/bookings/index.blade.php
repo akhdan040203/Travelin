@@ -52,17 +52,16 @@
                     <td class="px-5 py-4 text-center text-sm font-medium text-dark-900">{{ $booking->participants }}</td>
                     <td class="px-5 py-4 text-sm font-bold text-dark-900">{{ $booking->formatted_total_price }}</td>
                     <td class="px-5 py-4">
-                        <form action="{{ route('admin.bookings.updateStatus', $booking) }}" method="POST" class="flex items-center justify-center gap-2">
+                        <form action="{{ route('admin.bookings.updateStatus', $booking) }}" method="POST" class="flex items-center justify-center">
                             @csrf
                             @method('PATCH')
-                            <select name="status" class="w-52 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-dark-700 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20">
+                            <select name="status"
+                                    onchange="this.disabled = true; this.form.submit();"
+                                    class="w-56 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-dark-700 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20">
                                 @foreach(['pending'=>'Menunggu Pembayaran','paid'=>'Menunggu Konfirmasi Admin','confirmed'=>'Waiting Keberangkatan','ongoing'=>'Trip Berjalan','completed'=>'Selesai','cancelled'=>'Dibatalkan','refunded'=>'Refund'] as $val => $label)
                                     <option value="{{ $val }}" {{ $booking->status === $val ? 'selected' : '' }}>{{ $label }}</option>
                                 @endforeach
                             </select>
-                            <button type="submit" class="rounded-xl bg-dark-900 px-3 py-2 text-xs font-black text-white transition hover:bg-primary-500">
-                                Update
-                            </button>
                         </form>
                     </td>
                     <td class="px-5 py-4 text-center">

@@ -13,7 +13,7 @@
             {{-- Logo --}}
             <a href="{{ route('home') }}" class="flex items-center gap-2 group">
                 <div class="w-7 h-7 rounded-full flex items-center justify-center overflow-hidden transition-transform group-hover:scale-110">
-                    <img src="{{ asset('images/logoo3.png') }}" alt="Travelin Logo" 
+                    <img src="{{ asset('images/travelin-mark-transparent.png') }}?v={{ filemtime(public_path('images/travelin-mark-transparent.png')) }}" alt="Travelin Logo" 
                          class="w-full h-full object-contain rounded-full">
                 </div>
                 <span id="logo-text" class="text-base font-bold transition-colors {{ $useTransparentNavbar ? 'text-white' : 'text-dark-900' }}">
@@ -60,15 +60,19 @@
                     @else
                         <details class="relative group" style="z-index: 99995;">
                             <summary class="list-none cursor-pointer flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-3 transition-all {{ $useTransparentNavbar ? 'text-white hover:bg-white/10' : 'text-dark-900 hover:bg-gray-100' }}">
-                                <span class="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-xs font-bold shadow-md shadow-primary-500/20">
-                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                <span class="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center overflow-hidden text-white text-xs font-bold shadow-md shadow-primary-500/20">
+                                    @if(auth()->user()->avatar_url)
+                                        <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="h-full w-full object-cover">
+                                    @else
+                                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                    @endif
                                 </span>
                                 <span class="text-xs font-semibold max-w-32 truncate">{{ auth()->user()->name }}</span>
                                 <svg class="w-4 h-4 opacity-60 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
                             </summary>
-                            <div class="fixed w-60 overflow-hidden rounded-2xl bg-white shadow-2xl shadow-black/10 ring-1 ring-black/5" style="top: 5.25rem; right: max(1rem, calc((100vw - 80rem) / 2 + 1rem)); z-index: 100000;">
+                            <div class="absolute right-0 top-full mt-3 w-60 overflow-hidden rounded-2xl bg-white shadow-2xl shadow-black/10 ring-1 ring-black/5" style="z-index: 100000;">
                                 <div class="px-4 py-3 border-b border-gray-100">
                                     <p class="text-sm font-bold text-dark-900 truncate">{{ auth()->user()->name }}</p>
                                     <p class="text-xs text-dark-400 truncate">{{ auth()->user()->email }}</p>

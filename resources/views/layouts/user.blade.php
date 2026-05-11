@@ -30,7 +30,7 @@
             <div class="flex items-center gap-3 px-6 h-16 border-b border-gray-100">
                 <a href="{{ route('home') }}" class="flex items-center gap-2">
                     <div class="w-9 h-9 rounded-full flex items-center justify-center overflow-hidden">
-                        <img src="{{ asset('images/logoo3.png') }}" alt="Travelin Logo" class="w-full h-full object-contain rounded-full">
+                        <img src="{{ asset('images/travelin-mark-transparent.png') }}?v={{ filemtime(public_path('images/travelin-mark-transparent.png')) }}" alt="Travelin Logo" class="w-full h-full object-contain rounded-full">
                     </div>
                     <span class="text-lg font-bold text-dark-900">Travel<span class="text-primary-500">in</span></span>
                 </a>
@@ -39,8 +39,12 @@
             {{-- User Info --}}
             <div class="px-6 py-5 border-b border-gray-100">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-sm font-bold shadow-md shadow-primary-500/20">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center overflow-hidden text-white text-sm font-bold shadow-md shadow-primary-500/20">
+                        @if(auth()->user()->avatar_url)
+                            <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="h-full w-full object-cover">
+                        @else
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        @endif
                     </div>
                     <div class="min-w-0">
                         <p class="text-sm font-semibold text-dark-900 truncate">{{ auth()->user()->name }}</p>
@@ -120,8 +124,12 @@
                     </a>
                     <details class="relative group">
                         <summary class="list-none cursor-pointer flex items-center gap-2 rounded-xl px-2 py-1.5 hover:bg-gray-100 transition-colors">
-                            <span class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-sm font-bold shadow-md shadow-primary-500/20">
-                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                            <span class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center overflow-hidden text-white text-sm font-bold shadow-md shadow-primary-500/20">
+                                @if(auth()->user()->avatar_url)
+                                    <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="h-full w-full object-cover">
+                                @else
+                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                @endif
                             </span>
                             <svg class="w-4 h-4 text-dark-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>

@@ -31,7 +31,7 @@ new #[Layout('layouts.guest')] class extends Component
 <div class="rounded-[18px] bg-white px-5 py-7 shadow-[0_22px_60px_rgba(15,23,42,0.10)] sm:px-7">
     <div class="text-center">
         <a href="/" wire:navigate class="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-primary-500 shadow-lg shadow-primary-500/25">
-            <img src="{{ asset('images/logo_travel.png') }}?v={{ file_exists(public_path('images/logo_travel.png')) ? filemtime(public_path('images/logo_travel.png')) : time() }}" alt="Travelin" class="h-8 w-8 object-contain">
+            <img src="{{ asset('images/travelin-mark-transparent.png') }}?v={{ filemtime(public_path('images/travelin-mark-transparent.png')) }}" alt="Travelin" class="h-8 w-8 object-contain">
         </a>
         <h1 class="text-[22px] font-black leading-tight text-dark-900">Login akun</h1>
         <p class="mt-2 text-xs font-medium text-dark-500">

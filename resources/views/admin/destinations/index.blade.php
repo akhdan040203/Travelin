@@ -42,12 +42,26 @@
             </thead>
             <tbody class="divide-y divide-gray-50">
                 @forelse($destinations as $dest)
+                @php
+                    $fallbackImages = [
+                        'raja-ampat-paradise' => 'images/destinations/raja-ampat.png',
+                        'bromo-sunrise-experience' => 'images/destinations/bromo.png',
+                        'bali-island-hopping' => 'images/destinations/bali.png',
+                        'taman-nasional-komodo' => 'images/destinations/komodo.png',
+                        'yogyakarta-heritage-tour' => 'images/destinations/yogyakarta.png',
+                        'dieng-plateau-adventure' => 'images/destinations/dieng.png',
+                    ];
+
+                    $thumbnail = $dest->featured_image
+                        ? asset('storage/' . $dest->featured_image)
+                        : (isset($fallbackImages[$dest->slug]) ? asset($fallbackImages[$dest->slug]) : null);
+                @endphp
                 <tr class="hover:bg-gray-50/50 transition-colors">
                     <td class="px-5 py-4">
                         <div class="flex items-center gap-3">
                             <div class="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100">
-                                @if($dest->featured_image)
-                                    <img src="{{ asset('storage/' . $dest->featured_image) }}" class="w-full h-full object-cover" alt="">
+                                @if($thumbnail)
+                                    <img src="{{ $thumbnail }}" class="w-full h-full object-cover" alt="{{ $dest->name }}">
                                 @else
                                     <div class="w-full h-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
                                     </div>
@@ -80,11 +94,21 @@
                     </td>
                     <td class="px-5 py-4">
                         <div class="flex items-center justify-center gap-2">
-                            <a href="{{ route('admin.destinations.edit', $dest) }}" class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center hover:bg-blue-100 transition-colors" title="Edit">
+                            <a href="{{ route('admin.destinations.edit', $dest) }}" class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition-colors" title="Edit">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L9.38 17.272a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897l10.134-10.133z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 7.125L16.875 4.5"/>
+                                </svg>
                             </a>
                             <form action="{{ route('admin.destinations.destroy', $dest) }}" method="POST" onsubmit="return confirm('Yakin hapus destinasi ini?')">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center hover:bg-red-100 transition-colors" title="Hapus">
+                                <button type="submit" class="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors" title="Hapus">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 11v6M14 11v6"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7l1 13h6l1-13"/>
+                                    </svg>
                                 </button>
                             </form>
                         </div>

@@ -3,13 +3,18 @@
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Livewire\Volt\Component;
+use Livewire\WithFileUploads;
 
 new class extends Component
 {
+    use WithFileUploads;
+
     public string $name = '';
     public string $email = '';
+    public $avatar = null;
 
     /**
      * Mount the component.
@@ -30,7 +35,18 @@ new class extends Component
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'avatar' => ['nullable', 'image', 'max:2048'],
         ]);
+
+        if ($this->avatar) {
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+
+            $validated['avatar'] = $this->avatar->store('avatars', 'public');
+        } else {
+            unset($validated['avatar']);
+        }
 
         $user->fill($validated);
 
@@ -41,6 +57,7 @@ new class extends Component
         $user->save();
 
         $this->dispatch('profile-updated', name: $user->name);
+        $this->avatar = null;
     }
 
     /**
@@ -74,6 +91,28 @@ new class extends Component
     </header>
 
     <form wire:submit="updateProfileInformation" class="mt-6 space-y-6">
+        <div class="flex items-center gap-4 rounded-2xl bg-gray-50 p-4">
+            <div class="h-20 w-20 overflow-hidden rounded-full bg-gradient-to-br from-primary-400 to-primary-600 shadow-md shadow-primary-500/20">
+                @if($avatar)
+                    <img src="{{ $avatar->temporaryUrl() }}" class="h-full w-full object-cover" alt="Preview foto profil">
+                @elseif(auth()->user()->avatar_url)
+                    <img src="{{ auth()->user()->avatar_url }}" class="h-full w-full object-cover" alt="Foto profil">
+                @else
+                    <div class="flex h-full w-full items-center justify-center text-2xl font-black text-white">
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    </div>
+                @endif
+            </div>
+            <div class="min-w-0">
+                <label for="avatar" class="inline-flex cursor-pointer items-center rounded-xl bg-dark-900 px-4 py-2 text-xs font-bold text-white transition hover:bg-primary-500">
+                    Ganti Foto
+                </label>
+                <input wire:model="avatar" id="avatar" name="avatar" type="file" accept="image/*" class="hidden">
+                <p class="mt-2 text-xs text-gray-500">JPG, PNG, atau WEBP maksimal 2MB.</p>
+                <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
+            </div>
+        </div>
+
         <div>
             <x-input-label for="name" :value="__('Name')" />
             <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" />
