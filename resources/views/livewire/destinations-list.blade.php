@@ -93,8 +93,8 @@
                         </div>
                     </div>
 
-                    <button type="button" aria-label="Live search" class="w-full md:w-28 h-12 bg-primary-500 text-white rounded-full font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-primary-500/25">
-                        <span wire:loading.remove>Live</span>
+                    <button type="button" aria-label="Search" class="w-full md:w-28 h-12 bg-primary-500 text-white rounded-full font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-primary-500/25">
+                        <span wire:loading.remove>Search</span>
                         <span wire:loading>Loading</span>
                         <svg class="hidden md:block w-3.5 h-3.5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24">
                             <circle cx="11" cy="11" r="7"/>

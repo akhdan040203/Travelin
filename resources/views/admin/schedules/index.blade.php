@@ -55,11 +55,21 @@
                     </td>
                     <td class="px-5 py-4">
                         <div class="flex items-center justify-center gap-2">
-                            <a href="{{ route('admin.schedules.edit', $schedule) }}" class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center hover:bg-blue-100" title="Edit">
+                            <a href="{{ route('admin.schedules.edit', $schedule) }}" class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition-colors" title="Edit">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L9.38 17.272a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897l10.134-10.133z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 7.125L16.875 4.5"/>
+                                </svg>
                             </a>
                             <form action="{{ route('admin.schedules.destroy', $schedule) }}" method="POST" onsubmit="return confirm('Yakin hapus jadwal ini?')">
                                 @csrf @method('DELETE')
-                                <button class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center hover:bg-red-100">
+                                <button class="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors" title="Hapus">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 11v6M14 11v6"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7l1 13h6l1-13"/>
+                                    </svg>
                                 </button>
                             </form>
                         </div>
