@@ -36,19 +36,7 @@
             @endforeach
         </div>
 
-        {{-- Still Have Questions --}}
-        <div class="mt-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-3xl p-8 md:p-12 text-center">
-            <h2 class="text-2xl font-bold text-white mb-3">Masih punya pertanyaan?</h2>
-            <p class="text-white/80 mb-6">Tim kami siap membantu kamu 24/7</p>
-            <div class="flex flex-wrap justify-center gap-4">
-                <a href="{{ route('contact') }}" class="btn-white">
-                    Hubungi Kami
-                </a>
-                <a href="https://wa.me/6281234567890" class="bg-white/20 backdrop-blur text-white px-6 py-3 rounded-full font-semibold hover:bg-white/30 transition-all" target="_blank">
-                    Chat WhatsApp
-                </a>
-            </div>
-        </div>
+
     </div>
 </section>
 @endsection

@@ -28,8 +28,7 @@ class DestinationController extends Controller
             ->where('slug', $slug)
             ->where('is_active', true)
             ->firstOrFail();
-
-
+        $destination->increment('views_count');
 
         // Related destinations
         $relatedDestinations = Destination::with('category')

@@ -3,7 +3,76 @@
 
 @section('content')
 <div class="mb-6">
-    <a href="{{ route('admin.bookings.index') }}" class="text-primary-500 text-sm font-semibold hover:text-primary-600">← Kembali</a>
+    <a href="{{ route('admin.bookings.index') }}" class="text-primary-500 text-sm font-bold hover:text-primary-600 transition-colors">← Kembali ke Daftar</a>
+</div>
+
+{{-- Tracker Section --}}
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+    <h2 class="text-sm font-black text-dark-900 uppercase tracking-widest mb-8 text-center">Progres Perjalanan</h2>
+    
+    @php
+        $flow = ['pending', 'confirmed', 'ongoing', 'completed'];
+        $isCancelled = in_array($booking->status, ['cancelled', 'refunded']);
+        
+        if ($booking->status === 'paid') {
+            $currentIdx = 0.5;
+        } else {
+            $currentIdx = array_search($booking->status, $flow);
+            if ($currentIdx === false) $currentIdx = 0;
+        }
+
+        $statusLabels = [
+            'pending'   => 'Booking',
+            'confirmed' => 'Waiting',
+            'ongoing'   => 'Perjalanan',
+            'completed' => 'Selesai'
+        ];
+    @endphp
+
+    <div class="max-w-4xl mx-auto relative flex justify-between px-4">
+        {{-- Progress Line --}}
+        <div class="absolute top-4 left-4 right-4 h-0.5 bg-gray-100">
+             @if(!$isCancelled)
+                <div class="absolute top-0 left-0 h-full bg-primary-500 transition-all duration-1000" 
+                     style="width: {{ ($currentIdx / (count($flow) - 1)) * 100 }}%"></div>
+             @endif
+        </div>
+
+        {{-- Steps --}}
+        @if(!$isCancelled)
+            @foreach($flow as $i => $step)
+                <div class="relative flex flex-col items-center flex-1 z-10">
+                    <div class="w-9 h-9 rounded-full flex items-center justify-center transition-all border-2
+                        {{ $i < $currentIdx ? 'bg-emerald-500 border-emerald-500 text-white' : ($i <= $currentIdx ? 'bg-primary-500 border-primary-500 text-white shadow-xl shadow-primary-500/30' : 'bg-white border-gray-100 text-gray-300') }}">
+                        @if($i < $currentIdx)
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                        @elseif($i == $currentIdx)
+                            <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                        @else
+                            <div class="w-2 h-2 bg-gray-100 rounded-full"></div>
+                        @endif
+                    </div>
+                    <span class="text-[10px] font-black mt-3 uppercase tracking-tighter {{ $i <= $currentIdx ? 'text-dark-900 font-bold' : 'text-gray-400' }}">
+                        {{ $statusLabels[$step] }}
+                    </span>
+                </div>
+            @endforeach
+        @else
+            <div class="relative flex flex-col items-center flex-1 z-10">
+                <div class="w-9 h-9 bg-emerald-500 border-2 border-emerald-500 text-white rounded-full flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <span class="text-[10px] font-black mt-3 uppercase text-emerald-600">Booking</span>
+            </div>
+            <div class="relative flex flex-col items-center flex-1 z-10">
+                <div class="w-9 h-9 bg-red-500 border-2 border-red-500 text-white rounded-full flex items-center justify-center shadow-xl shadow-red-500/30">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+                </div>
+                <span class="text-[10px] font-black mt-3 uppercase text-red-600 font-bold">{{ $booking->status === 'refunded' ? 'Refunded' : 'Batal' }}</span>
+            </div>
+            @for($n=0;$n<2;$n++) <div class="flex-1"></div> @endfor
+        @endif
+    </div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -11,38 +80,31 @@
     <div class="lg:col-span-2 space-y-6">
         {{-- Booking Info --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="font-bold text-dark-900">Informasi Booking</h2>
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="font-black text-dark-900 uppercase text-sm tracking-widest">Data Customer</h2>
                 @php
-                    $colors = ['pending'=>'bg-yellow-100 text-yellow-700 border-yellow-200','paid'=>'bg-emerald-100 text-emerald-700 border-emerald-200','confirmed'=>'bg-blue-100 text-blue-700 border-blue-200','ongoing'=>'bg-indigo-100 text-indigo-700 border-indigo-200','completed'=>'bg-emerald-100 text-emerald-700 border-emerald-200','cancelled'=>'bg-red-100 text-red-700 border-red-200','refunded'=>'bg-gray-100 text-gray-700 border-gray-200'];
+                    $colors = ['pending'=>'bg-yellow-50 text-yellow-700 border-yellow-100','paid'=>'bg-blue-50 text-blue-700 border-blue-100','confirmed'=>'bg-emerald-50 text-emerald-700 border-emerald-100','ongoing'=>'bg-indigo-50 text-indigo-700 border-indigo-100','completed'=>'bg-emerald-50 text-emerald-700 border-emerald-100','cancelled'=>'bg-red-50 text-red-700 border-red-100','refunded'=>'bg-gray-50 text-gray-700 border-gray-100'];
                 @endphp
-                <span class="px-3 py-1.5 rounded-full text-xs font-semibold border {{ $colors[$booking->status] ?? 'bg-gray-100' }}">{{ $booking->status_label }}</span>
+                <span class="px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded-full border {{ $colors[$booking->status] ?? 'bg-gray-100' }}">
+                    {{ $booking->status === 'confirmed' ? 'Waiting' : ($booking->status === 'ongoing' ? 'Perjalanan' : $booking->status_label) }}
+                </span>
             </div>
-            <div class="bg-primary-50 rounded-xl p-4 text-center mb-4">
-                <span class="text-dark-400 text-xs block">Kode Booking</span>
-                <span class="text-xl font-bold text-primary-500 tracking-wider font-mono">{{ $booking->booking_code }}</span>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-4">
+                <div><span class="text-dark-300 text-[10px] font-black uppercase block mb-1">Kode Booking</span><span class="font-bold text-primary-500 font-mono">{{ $booking->booking_code }}</span></div>
+                <div><span class="text-dark-300 text-[10px] font-black uppercase block mb-1">Tanggal Pesan</span><span class="font-bold text-dark-900">{{ $booking->created_at->format('d M Y, H:i') }}</span></div>
+                <div><span class="text-dark-300 text-[10px] font-black uppercase block mb-1">Nama Kontak</span><span class="font-bold text-dark-900">{{ $booking->contact_name }}</span></div>
+                <div><span class="text-dark-300 text-[10px] font-black uppercase block mb-1">Email</span><span class="font-bold text-dark-900">{{ $booking->contact_email }}</span></div>
+                <div><span class="text-dark-300 text-[10px] font-black uppercase block mb-1">Telepon</span><span class="font-bold text-dark-900">{{ $booking->contact_phone }}</span></div>
+                <div><span class="text-dark-300 text-[10px] font-black uppercase block mb-1">Metode Pembayaran</span><span class="font-bold text-dark-900 uppercase text-xs">{{ $booking->payment_method }}</span></div>
             </div>
-            <div class="grid grid-cols-2 gap-4 text-sm">
-                <div><span class="text-dark-400 text-xs block mb-1">Nama Kontak</span><span class="font-semibold text-dark-900">{{ $booking->contact_name }}</span></div>
-                <div><span class="text-dark-400 text-xs block mb-1">Email</span><span class="font-semibold text-dark-900">{{ $booking->contact_email }}</span></div>
-                <div><span class="text-dark-400 text-xs block mb-1">Telepon</span><span class="font-semibold text-dark-900">{{ $booking->contact_phone }}</span></div>
-                <div><span class="text-dark-400 text-xs block mb-1">Pembayaran</span><span class="font-semibold text-dark-900">{{ ucfirst(str_replace('_',' ',$booking->payment_method)) }}</span></div>
-                <div><span class="text-dark-400 text-xs block mb-1">User</span><span class="font-semibold text-dark-900">{{ $booking->user->name ?? '-' }} ({{ $booking->user->email ?? '-' }})</span></div>
-                <div><span class="text-dark-400 text-xs block mb-1">Tanggal Booking</span><span class="font-semibold text-dark-900">{{ $booking->created_at->format('d M Y, H:i') }}</span></div>
-            </div>
-            @if($booking->special_requests)
-            <div class="mt-4 pt-4 border-t border-gray-100">
-                <span class="text-dark-400 text-xs block mb-1">Permintaan Khusus</span>
-                <p class="text-dark-600 text-sm">{{ $booking->special_requests }}</p>
-            </div>
-            @endif
         </div>
 
         {{-- Trip Detail --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <h2 class="font-bold text-dark-900 mb-4">Detail Perjalanan</h2>
-            <div class="flex items-start gap-4">
-                <div class="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+            <h2 class="font-black text-dark-900 uppercase text-sm tracking-widest mb-6">Detail Destinasi</h2>
+            <div class="flex items-center gap-6">
+                <div class="w-20 h-20 rounded-2xl overflow-hidden bg-gray-100 flex-shrink-0 shadow-sm">
                     @if($booking->schedule->destination->featured_image)
                         <img src="{{ asset('storage/' . $booking->schedule->destination->featured_image) }}" class="w-full h-full object-cover">
                     @else
@@ -50,72 +112,46 @@
                     @endif
                 </div>
                 <div>
-                    <h3 class="font-bold text-dark-900">{{ $booking->schedule->destination->name }}</h3>
-                    <p class="text-dark-400 text-sm">{{ $booking->schedule->destination->location }}</p>
-                    <p class="text-dark-400 text-xs mt-1">{{ $booking->schedule->departure_date->format('d M Y') }} - {{ $booking->schedule->return_date->format('d M Y') }}</p>
-                    @if($booking->schedule->meeting_point)
-                    <p class="text-dark-400 text-xs mt-0.5">{{ $booking->schedule->meeting_point }}</p>
-                    @endif
+                    <h3 class="font-black text-dark-900 text-lg leading-tight">{{ $booking->schedule->destination->name }}</h3>
+                    <p class="text-dark-400 text-sm font-medium mt-1">{{ $booking->schedule->destination->location }}</p>
+                    <div class="flex items-center gap-3 mt-2 font-bold text-xs text-primary-500">
+                        <span>{{ $booking->schedule->departure_date->format('d M Y') }}</span>
+                        <span class="text-gray-300">•</span>
+                        <span>{{ $booking->participants }} Peserta</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Sidebar --}}
+    {{-- Sidebar Admin --}}
     <div class="space-y-6">
-        {{-- Price Summary --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <h2 class="font-bold text-dark-900 mb-4">Ringkasan</h2>
-            <div class="space-y-3 text-sm">
-                <div class="flex justify-between"><span class="text-dark-400">Harga/orang</span><span>Rp {{ number_format($booking->price_per_person, 0, ',', '.') }}</span></div>
-                <div class="flex justify-between"><span class="text-dark-400">Peserta</span><span>× {{ $booking->participants }}</span></div>
-                <hr class="border-gray-100">
-                <div class="flex justify-between"><span class="font-bold text-dark-900">Total</span><span class="text-lg font-bold text-primary-500">{{ $booking->formatted_total_price }}</span></div>
-            </div>
-        </div>
-
         {{-- Update Status --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <h2 class="font-bold text-dark-900 mb-4">Ubah Status</h2>
-            <form action="{{ route('admin.bookings.updateStatus', $booking) }}" method="POST" class="space-y-3">
+            <h2 class="font-black text-dark-900 uppercase text-sm tracking-widest mb-6">Kelola Status</h2>
+            <form action="{{ route('admin.bookings.updateStatus', $booking) }}" method="POST" class="space-y-4">
                 @csrf @method('PATCH')
-                <select name="status" class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm bg-white focus:border-primary-500">
-                    @foreach(['pending'=>'Menunggu Pembayaran','paid'=>'Menunggu Konfirmasi Admin','confirmed'=>'Waiting Keberangkatan','ongoing'=>'Trip Berjalan','completed'=>'Selesai','cancelled'=>'Dibatalkan','refunded'=>'Refund'] as $val => $label)
+                <select name="status" class="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-xs font-bold bg-white focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all">
+                    @foreach(['pending' => 'Booking (Pending)', 'paid' => 'Menunggu Konfirmasi', 'confirmed' => 'Waiting (Siap)', 'ongoing' => 'Perjalanan', 'completed' => 'Selesai', 'cancelled' => 'Dibatalkan', 'refunded' => 'Refund'] as $val => $label)
                         <option value="{{ $val }}" {{ $booking->status === $val ? 'selected' : '' }}>{{ $label }}</option>
                     @endforeach
                 </select>
-                <button type="submit" class="btn-primary w-full text-sm flex items-center justify-center gap-2">
-                    Update Status
+                <button type="submit" class="w-full bg-dark-900 hover:bg-dark-800 text-white text-[11px] font-black py-4 rounded-xl shadow-lg transition-all uppercase tracking-widest">
+                    Update Progres
                 </button>
             </form>
         </div>
 
-        {{-- Timeline --}}
+        {{-- Payment Summary --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <h2 class="font-bold text-dark-900 mb-4">Timeline</h2>
-            <div class="space-y-3 text-xs">
-                <div class="flex items-center gap-3">
-                    <div class="w-2 h-2 rounded-full bg-primary-500"></div>
-                    <div><p class="font-medium text-dark-900">Dibuat</p><p class="text-dark-400">{{ $booking->created_at->format('d M Y, H:i') }}</p></div>
+            <h2 class="font-black text-dark-900 uppercase text-sm tracking-widest mb-4">Total Pembayaran</h2>
+            <div class="space-y-3">
+                <div class="flex justify-between text-xs font-medium text-dark-400"><span>Harga x Peserta</span><span>Rp {{ number_format($booking->price_per_person, 0, ',', '.') }} x {{ $booking->participants }}</span></div>
+                <hr class="border-gray-50">
+                <div class="flex justify-between items-end">
+                    <span class="text-[10px] font-black text-dark-300 uppercase">Total Tagihan</span>
+                    <span class="text-xl font-black text-primary-500 leading-none">{{ $booking->formatted_total_price }}</span>
                 </div>
-                @if($booking->paid_at)
-                <div class="flex items-center gap-3">
-                    <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
-                    <div><p class="font-medium text-dark-900">Dibayar</p><p class="text-dark-400">{{ $booking->paid_at->format('d M Y, H:i') }}</p></div>
-                </div>
-                @endif
-                @if($booking->confirmed_at)
-                <div class="flex items-center gap-3">
-                    <div class="w-2 h-2 rounded-full bg-blue-500"></div>
-                    <div><p class="font-medium text-dark-900">Waiting keberangkatan</p><p class="text-dark-400">{{ $booking->confirmed_at->format('d M Y, H:i') }}</p></div>
-                </div>
-                @endif
-                @if($booking->cancelled_at)
-                <div class="flex items-center gap-3">
-                    <div class="w-2 h-2 rounded-full bg-red-500"></div>
-                    <div><p class="font-medium text-dark-900">Dibatalkan</p><p class="text-dark-400">{{ $booking->cancelled_at->format('d M Y, H:i') }}</p></div>
-                </div>
-                @endif
             </div>
         </div>
     </div>

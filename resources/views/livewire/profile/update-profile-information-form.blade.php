@@ -80,75 +80,79 @@ new class extends Component
 }; ?>
 
 <section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Profile Information') }}
-        </h2>
-
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __("Update your account's profile information and email address.") }}
-        </p>
-    </header>
-
-    <form wire:submit="updateProfileInformation" class="mt-6 space-y-6">
-        <div class="flex items-center gap-4 rounded-2xl bg-gray-50 p-4">
-            <div class="h-20 w-20 overflow-hidden rounded-full bg-gradient-to-br from-primary-400 to-primary-600 shadow-md shadow-primary-500/20">
-                @if($avatar)
-                    <img src="{{ $avatar->temporaryUrl() }}" class="h-full w-full object-cover" alt="Preview foto profil">
-                @elseif(auth()->user()->avatar_url)
-                    <img src="{{ auth()->user()->avatar_url }}" class="h-full w-full object-cover" alt="Foto profil">
-                @else
-                    <div class="flex h-full w-full items-center justify-center text-2xl font-black text-white">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                    </div>
-                @endif
-            </div>
-            <div class="min-w-0">
-                <label for="avatar" class="inline-flex cursor-pointer items-center rounded-xl bg-dark-900 px-4 py-2 text-xs font-bold text-white transition hover:bg-primary-500">
-                    Ganti Foto
-                </label>
-                <input wire:model="avatar" id="avatar" name="avatar" type="file" accept="image/*" class="hidden">
-                <p class="mt-2 text-xs text-gray-500">JPG, PNG, atau WEBP maksimal 2MB.</p>
-                <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
-            </div>
-        </div>
-
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
-        </div>
-
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full" required autocomplete="username" />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
-
-            @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
-                <div>
-                    <p class="text-sm mt-2 text-gray-800">
-                        {{ __('Your email address is unverified.') }}
-
-                        <button wire:click.prevent="sendVerification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            {{ __('Click here to re-send the verification email.') }}
-                        </button>
-                    </p>
-
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600">
-                            {{ __('A new verification link has been sent to your email address.') }}
-                        </p>
+    <form wire:submit="updateProfileInformation" class="space-y-8">
+        {{-- Avatar Edit Section --}}
+        <div class="flex flex-col md:flex-row items-center gap-8 p-6 bg-gray-50 rounded-2xl border border-gray-100">
+            <div class="relative">
+                <div class="h-24 w-24 overflow-hidden rounded-full ring-4 ring-white shadow-xl shadow-black/5">
+                    @if($avatar)
+                        <img src="{{ $avatar->temporaryUrl() }}" class="h-full w-full object-cover" alt="Preview foto profil">
+                    @elseif(auth()->user()->avatar_url)
+                        <img src="{{ auth()->user()->avatar_url }}" class="h-full w-full object-cover" alt="Foto profil">
+                    @else
+                        <div class="flex h-full w-full items-center justify-center text-3xl font-black text-primary-500 bg-white">
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        </div>
                     @endif
                 </div>
-            @endif
+                <label for="avatar" class="absolute -bottom-1 -right-1 h-8 w-8 bg-dark-900 rounded-full flex items-center justify-center text-white cursor-pointer hover:bg-primary-500 transition-colors shadow-lg">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </label>
+                <input wire:model="avatar" id="avatar" name="avatar" type="file" accept="image/*" class="hidden">
+            </div>
+            <div class="flex-1 text-center md:text-left">
+                <h4 class="text-sm font-black text-dark-900 mb-1">Profile Photo</h4>
+                <p class="text-xs text-dark-400 mb-0">Recommended size: 400x400px (Max 2MB)</p>
+                <x-input-error class="mt-2 text-xs" :messages="$errors->get('avatar')" />
+            </div>
         </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+        {{-- Form Fields Grid --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-1.5">
+                <label for="name" class="text-[10px] font-black uppercase tracking-widest text-dark-400 ml-1">Full Name</label>
+                <input wire:model="name" id="name" name="name" type="text" 
+                       class="block w-full px-4 py-3.5 rounded-xl border-gray-100 bg-gray-50 text-sm font-bold text-dark-900 focus:bg-white focus:ring-primary-500 focus:border-primary-500 transition-all shadow-sm" 
+                       required autofocus autocomplete="name">
+                <x-input-error class="text-xs" :messages="$errors->get('name')" />
+            </div>
 
-            <x-action-message class="me-3" on="profile-updated">
-                {{ __('Saved.') }}
+            <div class="space-y-1.5">
+                <label for="email" class="text-[10px] font-black uppercase tracking-widest text-dark-400 ml-1">Email Address</label>
+                <input wire:model="email" id="email" name="email" type="email" 
+                       class="block w-full px-4 py-3.5 rounded-xl border-gray-100 bg-gray-50 text-sm font-bold text-dark-900 focus:bg-white focus:ring-primary-500 focus:border-primary-500 transition-all shadow-sm" 
+                       required autocomplete="username">
+                <x-input-error class="text-xs" :messages="$errors->get('email')" />
+            </div>
+
+            @php
+                $user = auth()->user();
+                // We use existing fields but formatted as seen in screenshot
+            @endphp
+            
+            <div class="space-y-1.5">
+                <label for="phone" class="text-[10px] font-black uppercase tracking-widest text-dark-400 ml-1">Phone Number</label>
+                <input value="{{ $user->phone ?? '+62 000 0000 0000' }}" disabled
+                       class="block w-full px-4 py-3.5 rounded-xl border-gray-100 bg-gray-50/50 text-sm font-bold text-dark-300 cursor-not-allowed italic">
+                <p class="text-[9px] text-dark-300 italic px-1">Currently read-only</p>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-black uppercase tracking-widest text-dark-400 ml-1">Account Role</label>
+                <div class="block w-full px-4 py-3.5 rounded-xl border border-gray-100 bg-gray-50/50 text-sm font-bold text-dark-300 capitalize">
+                    {{ $user->role }} Member
+                </div>
+            </div>
+        </div>
+
+        <div class="pt-4 flex items-center justify-end gap-4 border-t border-gray-50">
+            <x-action-message class="text-xs font-bold text-green-500" on="profile-updated">
+                {{ __('Saved successfully.') }}
             </x-action-message>
+
+            <button type="submit" class="px-8 py-3 bg-dark-900 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-primary-500 active:scale-95 transition-all shadow-lg shadow-black/10">
+                Save Changes
+            </button>
         </div>
     </form>
 </section>

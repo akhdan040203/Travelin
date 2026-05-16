@@ -13,7 +13,7 @@
             {{-- Logo --}}
             <a href="{{ route('home') }}" class="flex items-center gap-2 group">
                 <div class="w-7 h-7 rounded-full flex items-center justify-center overflow-hidden transition-transform group-hover:scale-110">
-                    <img src="{{ asset('images/travelin-mark-transparent.png') }}?v={{ filemtime(public_path('images/travelin-mark-transparent.png')) }}" alt="Travelin Logo" 
+                    <img src="{{ asset('images/travelin-mark-transparent.png') }}?v={{ filemtime(public_path('images/travelin-mark-transparent.png')) }}" alt="TravelGo Logo" 
                          class="w-full h-full object-contain rounded-full">
                 </div>
                 <span id="logo-text" class="text-base font-bold transition-colors {{ $useTransparentNavbar ? 'text-white' : 'text-dark-900' }}">

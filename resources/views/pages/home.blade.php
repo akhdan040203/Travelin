@@ -445,7 +445,7 @@
             <div class="overflow-x-auto pb-8 md:pb-14 hide-scrollbar scroll-smooth" id="popular-scroll">
             <div class="flex gap-4 md:gap-6 w-max px-0.5">
                 @foreach($popularDestinations as $dest)
-                <div class="w-[85vw] md:w-[388px] shrink-0 bg-white rounded-lg shadow-xl shadow-black/5 overflow-hidden transition-all duration-500 hover:-translate-y-2 border border-gray-50 flex flex-col">
+                <div class="w-[85vw] md:w-[388px] shrink-0 bg-white rounded-lg shadow-xl shadow-black/5 overflow-hidden border border-gray-50 flex flex-col">
                     {{-- Card Image --}}
                     <div class="relative h-[340px] overflow-hidden m-2 rounded-lg">
                         @php
@@ -461,18 +461,15 @@
                                 ? asset('storage/' . $dest->featured_image) 
                                 : (isset($localImages[$dest->slug]) ? asset($localImages[$dest->slug]) : 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800&q=80&fit=crop');
                         @endphp
-                        <img src="{{ $cardImg }}" 
-                             alt="{{ $dest->name }}" 
-                             class="w-full h-full object-cover">
+                        <img src="{{ $cardImg }}" alt="{{ $dest->name }}" class="w-full h-full object-cover">
                         
                         {{-- Bottom Badges --}}
-                        <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-                            <div class="flex items-center gap-1.5 px-3 py-1.5 bg-black/30 backdrop-blur-md rounded-xl border border-white/10">
-                                <span class="text-[10px] font-bold text-white uppercase tracking-wider truncate max-w-[120px]">{{ $dest->location }}</span>
+                        <div class="absolute bottom-4 left-4 flex">
+                            <div class="px-3 py-1.5 bg-black/50 backdrop-blur-md rounded-xl border border-white/10 uppercase font-black text-[9px] text-white tracking-widest leading-none">
+                                {{ $dest->location }}
                             </div>
                         </div>
 
-                        {{-- Card Dots --}}
                         <div class="absolute bottom-1 w-full flex justify-center gap-1.5">
                             <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
                             <span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>
@@ -484,7 +481,6 @@
                     <div class="p-6 pt-2 flex flex-col flex-1">
                         <h3 class="text-xl font-bold text-dark-900 mb-3 leading-tight">{{ $dest->name }}</h3>
                         
-                        {{-- Icon-free Details (List) --}}
                         <div class="grid grid-cols-2 gap-y-2 gap-x-4 mb-5">
                             <div class="flex items-center gap-2">
                                 <span class="w-1 h-1 rounded-full bg-primary-500"></span>
@@ -504,22 +500,20 @@
                             </div>
                         </div>
 
-                        {{-- Date Pills --}}
                         <div class="flex flex-wrap gap-2 mb-6">
                             @php $dates = ['12 May 2024', '18 Jun 2024', '22 Jul 2024']; @endphp
                             @foreach($dates as $date)
-                            <div class="px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-[10px] font-semibold text-dark-400">{{ $date }}</div>
+                            <div class="px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-[10px] font-semibold text-dark-400 uppercase tracking-tighter">{{ $date }}</div>
                             @endforeach
-                            <div class="px-3 py-1.5 bg-primary-50 text-primary-600 rounded-lg text-[10px] font-bold">hot deal</div>
+                            <div class="px-3 py-1.5 bg-rose-50 text-rose-500 rounded-lg text-[10px] font-black uppercase tracking-tighter">hot deal</div>
                         </div>
 
-                        {{-- Pricing and CTA --}}
                         <div class="mt-auto flex items-end justify-between gap-4">
-                            <div class="min-w-0 flex-1">
-                                <span class="text-xs text-dark-300 line-through block">Rp {{ number_format($dest->price * 1.2, 0, ',', '.') }}</span>
-                                <span class="text-xl font-bold text-primary-500">Rp {{ number_format($dest->price, 0, ',', '.') }}</span>
+                            <div class="min-w-0">
+                                <span class="text-xs text-dark-200 line-through block font-medium">Rp {{ number_format($dest->price * 1.2, 0, ',', '.') }}</span>
+                                <span class="text-xl font-black text-rose-500">Rp {{ number_format($dest->price, 0, ',', '.') }}</span>
                             </div>
-                            <a href="{{ route('destinations.show', $dest->slug) }}" class="inline-flex h-9 flex-shrink-0 items-center justify-center rounded-lg bg-dark-900 px-4 text-[10px] font-black uppercase tracking-widest text-white hover:bg-primary-500 transition-colors">
+                            <a href="{{ route('destinations.show', $dest->slug) }}" class="inline-flex h-9 flex-shrink-0 items-center justify-center rounded-lg bg-dark-900 px-5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-primary-500 transition-colors">
                                 Book
                             </a>
                         </div>
@@ -1037,7 +1031,7 @@
         document.querySelectorAll('[id^="list-"]').forEach(el => el.classList.add('hidden'));
         document.querySelectorAll('[id^="arrow-"]').forEach(el => el.classList.remove('rotate-180'));
     });
+
+    // GSAP Scroll Animations
 </script>
 @endpush
-
-

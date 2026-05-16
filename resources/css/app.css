@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 /* ============================================
    Tailwind CSS v4 — CSS-first Configuration
    ============================================ */
@@ -5,8 +7,6 @@
 @plugin "@tailwindcss/forms";
 @source "../../resources/views";
 @source "../../resources/js";
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 /* ============================================
    Theme Configuration (replaces tailwind.config.js)

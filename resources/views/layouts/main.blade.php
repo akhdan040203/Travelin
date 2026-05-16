@@ -4,13 +4,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="@yield('meta_description', 'Travelin - Jelajahi keindahan Indonesia bersama kami. Booking paket wisata terbaik dengan harga terjangkau.')">
+    <meta name="description" content="@yield('meta_description', 'TravelGo - Jelajahi keindahan Indonesia bersama kami. Booking paket wisata terbaik dengan harga terjangkau.')">
 
-    <title>@yield('title', 'Travelin - Jelajahi Indonesia')</title>
+    <title>@yield('title', 'TravelGo - Jelajahi Indonesia')</title>
 
     <!-- Favicon -->
     <link rel="icon" href="{{ asset('images/travelin-mark-transparent.png') }}?v={{ filemtime(public_path('images/travelin-mark-transparent.png')) }}" type="image/png">
     <link rel="apple-touch-icon" href="{{ asset('images/travelin-mark-transparent.png') }}?v={{ filemtime(public_path('images/travelin-mark-transparent.png')) }}">
+
+    <!-- Fonts -->
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,7 +30,6 @@
     {{-- Navbar --}}
     @include('components.public.navbar')
 
-    {{-- Main Content --}}
     <main>
         @yield('content')
     </main>

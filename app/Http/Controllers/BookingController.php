@@ -49,7 +49,7 @@ class BookingController extends Controller
         $booking = Booking::create([
             'user_id' => $request->user()->id,
             'schedule_id' => $schedule->id,
-            'booking_code' => 'TG-' . strtoupper(Str::random(8)),
+            'booking_code' => 'TRV-' . strtoupper(Str::random(8)),
             'contact_name' => $data['contact_name'],
             'contact_email' => $request->user()->email,
             'contact_phone' => $data['contact_phone'],
@@ -60,6 +60,9 @@ class BookingController extends Controller
             'status' => 'pending',
             'special_requests' => $data['special_requests'] ?? null,
         ]);
+
+        // Update kuota terisi
+        $schedule->increment('booked', $participants);
 
         $snapToken = $this->createMidtransSnapToken($booking);
 
